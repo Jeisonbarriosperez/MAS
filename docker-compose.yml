@@ -1,0 +1,35 @@
+services:
+  web:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./Web_Forestacion:/var/www/html/
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.4
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mas_deforestacion
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db_init:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+
+  # ¡AQUÍ ESTÁ LA MAGIA NUEVA!
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8080:80" # Usamos el puerto 8080 para que no choque con tu página web
+    environment:
+      PMA_HOST: db
+      PMA_USER: root
+      PMA_PASSWORD: root
+    depends_on:
+      - db
+
+volumes:
+  db_data:
