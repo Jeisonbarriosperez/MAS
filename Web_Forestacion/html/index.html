@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAS - Monitoreo y Control Ambiental</title>
+
+  <!-- Desde /html apuntamos a /css -->
+  <link rel="stylesheet" href="../css/style.css?v=2" />
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+</head>
+
+<body>
+
+  <!-- Encabezado principal -->
+  <header>
+    <div>
+      <h1>Monitoreo Ambiental Sucre (MAS)</h1>
+      <p>Sistema web para el monitoreo y control ambiental en el departamento de Sucre.</p>
+    </div>
+
+    <!-- Menú de navegación principal -->
+    <nav>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#reportar">Reportar Daño Ambiental</a></li>
+        <li><a href="#mapa">Mapa de zonas afectadas</a></li>
+        <li><a href="#educacion">Educación ambiental</a></li>
+        <li><a href="#estadisticas">Estadísticas</a></li>
+        <li><a href="#ingresar">Ingresar / Registrarse</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <!-- Sección Inicio / Presentación del sistema -->
+    <section id="inicio">
+      <h2>Bienvenido a MAS</h2>
+      <p>
+        MAS es una plataforma web que permite a la ciudadanía y a las autoridades ambientales
+        registrar, visualizar y hacer seguimiento a actividades relacionadas con el medio ambiente
+        en el departamento de Sucre.
+      </p>
+    </section>
+
+    <!-- Sección para crear reportes de deforestación -->
+    <section id="reportar">
+      <h2>Crear Reporte Ambiental</h2>
+      <p>Si eres testigo de una actividad que afecte el ecosistema en el departamento de Sucre, regístrala aquí.</p>
+
+      <form id="form-reporte" class="formulario">
+        <!-- Tipo de actividad -->
+        <div class="campo">
+          <label for="tipoActividad">Tipo de Daño Ambiental:</label>
+          <select id="tipoActividad" name="tipoActividad">
+            <option value="">-- Seleccione una categoría --</option>
+            <option value="tala">Tala Indebida de Árboles / Deforestación</option>
+            <option value="quema">Quemas Provocadas o Incendios</option>
+            <option value="cambio_uso">Uso Inadecuado del Suelo</option>
+            <option value="extraccion">Minería o Extracción Ilegal de Recursos</option>
+            <option value="contaminacion_agua">Contaminación de Ríos, Arroyos o Playas</option>
+            <option value="basuras">Arrojo Clandestino de Basuras y Residuos</option>
+            <option value="fauna">Caza, Tráfico o Maltrato de Fauna Silvestre</option>
+            <option value="otra">Otro Daño o Impacto Ambiental</option>
+          </select>
+        </div>
+
+        <!-- Municipio -->
+        <div class="campo">
+          <label for="municipio">Municipio *</label>
+          <input type="text" id="municipio" name="municipio" placeholder="Ej: Sincelejo" required />
+        </div>
+
+        <!-- Vereda / zona -->
+        <div class="campo">
+          <label for="vereda">Vereda o zona *</label>
+          <input type="text" id="vereda" name="vereda" placeholder="Ej: Vereda La Esperanza" required />
+        </div>
+
+        <!-- Coordenadas aproximadas -->
+        <div class="campo">
+          <label for="coordenadas">Coordenadas </label>
+          <input type="text" id="coordenadas" name="coordenadas" placeholder="Ej: 9.2431, -75.1234" />
+        </div>
+
+
+        <!-- Fecha de observación -->
+        <div class="campo">
+          <label for="fecha">Fecha de la observación *</label>
+          <input type="date" id="fecha" name="fecha" required />
+        </div>
+
+        <!-- Hora aproximada -->
+        <div class="campo">
+          <label for="hora">Hora aproximada</label>
+          <input type="time" id="hora" name="hora" />
+        </div>
+
+        <!-- Hectáreas afectadas -->
+        <div class="campo">
+          <label for="hectareas">Hectáreas afectadas (aprox.)</label>
+          <input type="number" id="hectareas" name="hectareas" min="0" step="0.1" placeholder="Ej: 2.5" />
+        </div>
+
+        <!-- Tipo de ecosistema -->
+        <div class="campo">
+          <label for="ecosistema">Tipo de ecosistema</label>
+          <select id="ecosistema" name="ecosistema">
+            <option value="">Opcional</option>
+            <option value="bosque_humedo">Bosque húmedo</option>
+            <option value="bosque_seco">Bosque seco</option>
+            <option value="manglar">Manglar</option>
+            <option value="otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="idAutoridadReporte">Autoridad ambiental responsable *</label>
+          <select id="idAutoridadReporte" name="id_autoridad" required>
+            <option value="">Selecciona la autoridad a la que enviarás el reporte</option>
+          </select>
+          <small>Autoridades especializadas en el tipo de actividad (tala, quema, etc.).</small>
+        </div>
+
+
+        <!-- Descripción -->
+        <div class="campo campo-full">
+          <label for="descripcion">Descripción del caso *</label>
+          <textarea id="descripcion" name="descripcion" rows="4"
+            placeholder="Describe lo que observaste, responsables (si los conoces), vías de acceso, etc."
+            required></textarea>
+        </div>
+
+        <!-- Evidencia fotográfica -->
+        <div class="campo campo-full">
+          <label for="evidencia">Evidencia fotográfica (opcional)</label>
+          <input type="file" id="evidencia" name="evidencia" accept="image/*" />
+          <small>Puedes adjuntar fotos en formato JPG o PNG.</small>
+        </div>
+
+        <!-- Botón -->
+        <div class="campo campo-full">
+          <button type="submit" class="btn-primario">
+            Enviar reporte
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Sección con mapa -->
+    <section id="mapa">
+      <h2>Mapa de zonas afectadas</h2>
+      <p>
+        En este mapa se representan los reportes de deforestación registrados en el sistema MAS.
+        Cada marcador corresponde a una zona afectada.
+      </p>
+
+      <!-- Contenedor del mapa -->
+      <div id="mapa-zonas"></div>
+
+      <p class="nota-mapa">
+        Nota: las ubicaciones son aproximadas y se basan en las coordenadas suministradas en los reportes.
+      </p>
+    </section>
+
+
+    <!-- Sección de educación ambiental -->
+    <section id="educacion">
+      <h2>Educación ambiental</h2>
+      <p>
+        Material básico para comprender el impacto de la deforestación y las acciones
+        que pueden tomar la ciudadanía y las autoridades ambientales en el departamento de Sucre.
+      </p>
+
+      <!-- Pestañas de contenido -->
+      <div class="edu-tabs">
+        <button class="edu-tab activo" data-target="ciudadania">Para ciudadanía</button>
+        <button class="edu-tab" data-target="autoridades">Para autoridades</button>
+      </div>
+
+      <!-- Panel: ciudadanía -->
+      <div class="edu-panel" id="edu-ciudadania">
+        <div class="edu-grid">
+          <article class="edu-card">
+            <span class="edu-tag">Buenas prácticas</span>
+            <h3>¿Cómo reducir la presión sobre los bosques?</h3>
+            <p>
+              Evitar la quema de residuos, respetar las rondas hídricas y no comprar
+              madera de origen dudoso son acciones clave para disminuir la deforestación.
+            </p>
+            <ul>
+              <li>Usar leña solo de fuentes controladas.</li>
+              <li>No invadir zonas de reserva o nacederos.</li>
+              <li>Denunciar tala o quema a las autoridades.</li>
+            </ul>
+          </article>
+
+          <article class="edu-card">
+            <span class="edu-tag">Denuncia</span>
+            <h3>¿Cuándo reportar en MAS?</h3>
+            <p>
+              Reporta en MAS cuando observes tala, quema, apertura de vías ilegales,
+              transporte de madera sin permisos o cambio brusco del uso del suelo.
+            </p>
+            <ul>
+              <li>Toma fotos si es seguro hacerlo.</li>
+              <li>Anota referencias del lugar (vereda, finca, carretera).</li>
+              <li>No te enfrentes directamente a los responsables.</li>
+            </ul>
+          </article>
+
+          <article class="edu-card">
+            <span class="edu-tag">Reforestación</span>
+            <h3>Importancia de reforestar</h3>
+            <p>
+              Reforestar ayuda a recuperar suelos, proteger fuentes de agua y mejorar
+              la biodiversidad. Pregunta en tu municipio por jornadas de siembra.
+            </p>
+            <ul>
+              <li>Priorizar especies nativas de la región.</li>
+              <li>Proteger las plantas jóvenes del ganado.</li>
+              <li>Evitar sembrar especies invasoras.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+
+      <!-- Panel: autoridades -->
+      <div class="edu-panel oculto" id="edu-autoridades">
+        <div class="edu-grid">
+          <article class="edu-card">
+            <span class="edu-tag">Monitoreo</span>
+            <h3>Uso de MAS para la gestión institucional</h3>
+            <p>
+              La plataforma MAS puede apoyar la priorización de operativos,
+              la actualización de planes de manejo y el seguimiento a zonas críticas.
+            </p>
+            <ul>
+              <li>Identificar veredas con mayor número de reportes.</li>
+              <li>Cruzar información con imágenes satelitales.</li>
+              <li>Generar reportes periódicos para la toma de decisiones.</li>
+            </ul>
+          </article>
+
+          <article class="edu-card">
+            <span class="edu-tag">Normatividad</span>
+            <h3>Normas clave relacionadas con la deforestación</h3>
+            <p>
+              Se debe articular el uso de MAS con la normatividad ambiental vigente,
+              planes de ordenamiento territorial y acuerdos comunitarios.
+            </p>
+            <ul>
+              <li>Licencias ambientales y permisos de aprovechamiento forestal.</li>
+              <li>Zonas de reserva y áreas protegidas municipales y regionales.</li>
+              <li>Protocolos para atención de quemas e incendios forestales.</li>
+            </ul>
+          </article>
+
+          <article class="edu-card">
+            <span class="edu-tag">Participación</span>
+            <h3>Trabajo con comunidades</h3>
+            <p>
+              Las comunidades rurales son aliadas clave en la detección temprana
+              de la deforestación y en la implementación de alternativas productivas.
+            </p>
+            <ul>
+              <li>Capacitaciones sobre uso de la plataforma MAS.</li>
+              <li>Mesas de trabajo con líderes comunitarios.</li>
+              <li>Incentivos para iniciativas locales de conservación.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Sección de estadísticas para la autoridad -->
+    <section id="estadisticas">
+      <h2>Estadísticas y seguimiento</h2>
+      <p>
+        En esta sección se muestran indicadores básicos sobre los reportes de deforestación
+        registrados en el sistema MAS.
+      </p>
+
+      <!-- Resumen en tarjetas -->
+      <div class="stats-resumen">
+        <div class="stat-card">
+          <h3>Total de reportes</h3>
+          <p id="stat-total-reportes" class="stat-valor">0</p>
+          <span class="stat-etiqueta">Registros en el sistema</span>
+        </div>
+
+        <div class="stat-card">
+          <h3>Hectáreas afectadas (aprox.)</h3>
+          <p id="stat-hectareas" class="stat-valor">0</p>
+          <span class="stat-etiqueta">Suma de las hectáreas reportadas</span>
+        </div>
+
+        <div class="stat-card">
+          <h3>Municipios involucrados</h3>
+          <p id="stat-municipios" class="stat-valor">0</p>
+          <span class="stat-etiqueta">Municipios con al menos un reporte</span>
+        </div>
+      </div>
+
+      <!-- Detalle por tipo y por municipio -->
+      <div class="stats-detalle">
+        <div class="stat-bloque">
+          <h4>Reportes por tipo de actividad</h4>
+          <ul id="lista-tipo-actividad" class="stat-lista">
+            <!-- JS llena estos datos -->
+          </ul>
+        </div>
+
+        <div class="stat-bloque">
+          <h4>Reportes por municipio</h4>
+          <ul id="lista-municipios" class="stat-lista">
+            <!-- JS llena estos datos -->
+          </ul>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- Sección de autenticación (login y registro) -->
+    <section id="ingresar">
+      <h2>Ingresar al sistema</h2>
+      <p>
+        Usa tu correo y contraseña para ingresar al sistema MAS.
+        El sistema identificará si eres ciudadano o autoridad ambiental
+        según el perfil registrado por el administrador.
+      </p>
+
+      <div class="auth-contenedor">
+        <!-- Pestañas -->
+        <div class="auth-tabs">
+          <button class="auth-tab activo" data-target="login">Iniciar sesión</button>
+          <button class="auth-tab" data-target="registro">Registrarme</button>
+        </div>
+
+        <!-- Panel LOGIN -->
+        <div class="auth-panel" id="panel-login">
+          <form id="form-login" class="formulario auth-form">
+            <div class="campo campo-full">
+              <label for="loginCorreo">Correo electrónico *</label>
+              <input type="email" id="loginCorreo" name="loginCorreo" placeholder="ejemplo@correo.com" required />
+            </div>
+
+            <div class="campo campo-full">
+              <label for="loginClave">Contraseña *</label>
+              <input type="password" id="loginClave" name="loginClave" required />
+            </div>
+
+            <div class="campo">
+              <label>
+                <input type="checkbox" id="loginRecordar" />
+                Mantener sesión iniciada
+              </label>
+            </div>
+
+            <div class="campo campo-full">
+              <button type="submit" class="btn-primario">
+                Iniciar sesión
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Panel REGISTRO (SOLO CIUDADANOS) -->
+        <div class="auth-panel oculto" id="panel-registro">
+          <form id="form-registro" class="formulario auth-form">
+            <div class="campo">
+              <label for="regNombre">Nombre *</label>
+              <input type="text" id="regNombre" name="regNombre" required />
+            </div>
+
+            <div class="campo">
+              <label for="regApellido">Apellido *</label>
+              <input type="text" id="regApellido" name="regApellido" required />
+            </div>
+
+            <div class="campo">
+              <label for="regCorreo">Correo electrónico *</label>
+              <input type="email" id="regCorreo" name="regCorreo" placeholder="ejemplo@correo.com" required />
+            </div>
+
+            <div class="campo">
+              <label for="regTelefono">Teléfono</label>
+              <input type="tel" id="regTelefono" name="regTelefono" placeholder="Ej: 3001234567" />
+            </div>
+
+            <div class="campo">
+              <label for="regMunicipio">Municipio *</label>
+              <input type="text" id="regMunicipio" name="regMunicipio" placeholder="Ej: Sincelejo" required />
+            </div>
+
+            <div class="campo">
+              <label for="regVereda">Vereda / Barrio</label>
+              <input type="text" id="regVereda" name="regVereda" placeholder="Ej: Vereda La Esperanza" />
+            </div>
+
+            <!-- AQUÍ AÑADIMOS LAS CONTRASEÑAS -->
+            <div class="campo">
+              <label for="regClave">Contraseña *</label>
+              <input type="password" id="regClave" name="regClave" required />
+            </div>
+
+            <div class="campo">
+              <label for="regClave2">Confirmar contraseña *</label>
+              <input type="password" id="regClave2" name="regClave2" required />
+            </div>
+
+            <div class="campo campo-full">
+              <button type="submit" class="btn-primario">
+                Crear cuenta ciudadana
+              </button>
+            </div>
+          </form>
+        </div>
+    </section>
+
+
+    <section id="panel-admin" class="oculto">
+      <h2>Panel de administrador</h2>
+      <p>
+        Desde aquí puedes registrar nuevas autoridades ambientales que gestionarán
+        los reportes enviados por la ciudadanía.
+      </p>
+
+      <form id="form-crear-autoridad" class="formulario">
+        <div class="campo">
+          <label for="autNombre">Nombre *</label>
+          <input type="text" id="autNombre" name="nombre" required />
+        </div>
+
+        <div class="campo">
+          <label for="autApellido">Apellido *</label>
+          <input type="text" id="autApellido" name="apellido" required />
+        </div>
+
+        <div class="campo">
+          <label for="autCorreo">Correo electrónico *</label>
+          <input type="email" id="autCorreo" name="correo" placeholder="autoridad@mas.com" required />
+        </div>
+
+        <div class="campo">
+          <label for="autTelefono">Teléfono</label>
+          <input type="tel" id="autTelefono" name="telefono" placeholder="Ej: 3001234567" />
+        </div>
+
+        <div class="campo">
+          <label for="autMunicipio">Municipio *</label>
+          <input type="text" id="autMunicipio" name="municipio" placeholder="Ej: Sincelejo" required />
+        </div>
+
+        <div class="campo">
+          <label for="autVereda">Vereda / Barrio</label>
+          <input type="text" id="autVereda" name="vereda" placeholder="Ej: Oficina central" />
+        </div>
+
+        <div class="campo">
+          <label for="autClave">Contraseña inicial *</label>
+          <input type="password" id="autClave" name="clave" required />
+        </div>
+
+        <div class="campo campo-full">
+          <button type="submit" class="btn-primario">
+            Crear autoridad
+          </button>
+        </div>
+        <div class="campo">
+          <label for="autEspecialidad">Especialidad de la autoridad *</label>
+          <select id="autEspecialidad" name="especialidad" required>
+            <option value="tala">Tala de árboles</option>
+            <option value="quema">Quema</option>
+            <option value="cambio_uso">Cambio de uso del suelo</option>
+            <option value="extraccion">Extracción ilegal</option>
+            <option value="otra">Otra / general</option>
+          </select>
+        </div>
+
+      </form>
+      <!-- NUEVA SECCIÓN: Gestión de usuarios -->
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
+
+      <h3>Gestión de usuarios</h3>
+      <p>Administra todos los ciudadanos, autoridades y administradores registrados en la plataforma.</p>
+
+      <div class="tabla-reportes-autoridad">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th>Especialidad</th>
+              <th>Municipio</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-usuarios-admin">
+            <!-- JS inyecta filas -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Detalle / edición de usuario -->
+      <div id="detalle-usuario-admin" class="detalle-reporte oculto">
+        <h3>Editar usuario</h3>
+
+        <form id="form-editar-usuario-admin" class="formulario">
+          <input type="hidden" id="adminUserId" name="id_usuario" />
+
+          <div class="campo">
+            <label for="adminUserNombre">Nombre</label>
+            <input type="text" id="adminUserNombre" name="nombre" required />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserApellido">Apellido</label>
+            <input type="text" id="adminUserApellido" name="apellido" required />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserCorreo">Correo</label>
+            <input type="email" id="adminUserCorreo" name="correo" required />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserTelefono">Teléfono</label>
+            <input type="tel" id="adminUserTelefono" name="telefono" />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserMunicipio">Municipio</label>
+            <input type="text" id="adminUserMunicipio" name="municipio" />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserVereda">Vereda / barrio</label>
+            <input type="text" id="adminUserVereda" name="vereda" />
+          </div>
+
+          <div class="campo">
+            <label for="adminUserRol">Rol</label>
+            <select id="adminUserRol" name="tipo_usuario" required>
+              <option value="ciudadano">Ciudadano</option>
+              <option value="autoridad">Autoridad</option>
+              <option value="admin">Administrador</option>
+            </select>
+          </div>
+
+          <div class="campo">
+            <label for="adminUserEspecialidad">Especialidad (si es autoridad)</label>
+            <select id="adminUserEspecialidad" name="especialidad">
+              <option value="">(Ninguna / no aplica)</option>
+              <option value="tala">Tala de árboles</option>
+              <option value="quema">Quema</option>
+              <option value="cambio_uso">Cambio de uso del suelo</option>
+              <option value="extraccion">Extracción ilegal</option>
+              <option value="otra">Otra</option>
+              <option value="general">General</option>
+            </select>
+          </div>
+
+          <div class="campo campo-full">
+            <label for="adminUserNuevaClave">Nueva contraseña (opcional)</label>
+            <input type="password" id="adminUserNuevaClave" name="nueva_clave"
+              placeholder="Déjalo vacío para no cambiar la clave" />
+          </div>
+
+          <div class="campo campo-full" style="display:flex; gap:10px; margin-top:8px;">
+            <button type="submit" class="btn-primario">Guardar cambios</button>
+            <button type="button" id="btn-cancelar-edicion-usuario" class="btn-secundario">
+              Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- Panel privado de usuario (ciudadano) -->
+    <section id="panel-usuario" class="oculto">
+      <h2>Mis reportes de deforestación</h2>
+      <p>
+        Aquí puedes consultar y gestionar los reportes que has registrado en MAS.
+      </p>
+
+      <div class="tabla-mis-reportes">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Fecha</th>
+              <th>Municipio</th>
+              <th>Tipo</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-mis-reportes">
+            <!-- JS inyecta filas -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="detalle-mi-reporte" class="detalle-reporte oculto">
+        <h3>Detalle del reporte</h3>
+        <p><strong>Municipio:</strong> <span data-campo="municipio"></span></p>
+        <p><strong>Vereda / zona:</strong> <span data-campo="vereda"></span></p>
+        <p><strong>Tipo de actividad:</strong> <span data-campo="tipo"></span></p>
+        <p><strong>Fecha y hora:</strong> <span data-campo="fecha-hora"></span></p>
+        <p><strong>Hectáreas afectadas:</strong> <span data-campo="hectareas"></span></p>
+        <p><strong>Ecosistema:</strong> <span data-campo="ecosistema"></span></p>
+        <p><strong>Descripción:</strong></p>
+        <p><span data-campo="descripcion"></span></p>
+
+        <div class="detalle-imagen">
+          <p><strong>Evidencia fotográfica:</strong></p>
+          <img id="detalle-mi-reporte-img" src="" alt="Evidencia del reporte" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel privado de autoridad -->
+    <section id="panel-autoridad" class="oculto">
+      <h2>Panel de autoridad ambiental</h2>
+      <p>
+        En este panel se listan todos los reportes registrados en la plataforma MAS
+        para apoyar el monitoreo y la toma de decisiones.
+      </p>
+
+      <div class="tabla-reportes-autoridad">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Ciudadano</th>
+              <th>Municipio</th>
+              <th>Vereda / zona</th>
+              <th>Tipo</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-reportes-autoridad">
+            <!-- JS inyecta las filas -->
+          </tbody>
+        </table>
+      </div>
+
+      <div id="detalle-reporte-autoridad" class="detalle-reporte oculto">
+        <h3>Detalle del reporte seleccionado</h3>
+        <p>
+          <strong>Reportado por:</strong>
+          <span data-campo="ciudadano"></span>
+        </p>
+        <p>
+          <strong>Correo:</strong>
+          <span data-campo="correo"></span>
+        </p>
+        <p>
+          <strong>Municipio:</strong>
+          <span data-campo="municipio"></span>
+        </p>
+        <p>
+          <strong>Vereda / zona:</strong>
+          <span data-campo="vereda"></span>
+        </p>
+        <p>
+          <strong>Tipo de actividad:</strong>
+          <span data-campo="tipo"></span>
+        </p>
+        <p>
+          <strong>Fecha y hora:</strong>
+          <span data-campo="fecha-hora"></span>
+        </p>
+        <p>
+          <strong>Hectáreas afectadas:</strong>
+          <span data-campo="hectareas"></span>
+        </p>
+        <p>
+          <strong>Ecosistema:</strong>
+          <span data-campo="ecosistema"></span>
+        </p>
+        <p><strong>Descripción:</strong></p>
+        <p><span data-campo="descripcion"></span></p>
+
+        <div class="detalle-imagen">
+          <p><strong>Evidencia fotográfica:</strong></p>
+          <img id="detalle-reporte-autoridad-img" src="" alt="Evidencia del reporte" />
+        </div>
+
+        <div class="detalle-estado">
+          <label for="estado-reporte-select">Estado del reporte:</label>
+          <select id="estado-reporte-select">
+            <option value="registrado">Registrado</option>
+            <option value="en_revision">En revisión</option>
+            <option value="en_proceso">En proceso</option>
+            <option value="cerrado">Cerrado</option>
+          </select>
+
+          <label for="observacion-cierre">Observación / nota de cierre (opcional)</label>
+          <textarea id="observacion-cierre" rows="3"></textarea>
+
+          <button type="button" id="btn-guardar-estado" class="btn-primario">
+            Guardar cambios
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+  </main>
+
+  <footer>
+    <p>Proyecto MAS - Monitoreo y Control de la Deforestación · CECAR · 2025</p>
+  </footer>
+
+  <!-- Desde /html apuntamos a /js -->
+  <script src="../js/app.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</body>
+
+</html>
