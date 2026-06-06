@@ -2,14 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // =========================
   // 0. Referencias a elementos
   // =========================
- 
+
 
   const seccionInicio = document.getElementById("inicio");
   const seccionReportar = document.getElementById("reportar");
   const seccionMapa = document.getElementById("mapa");
   const seccionEstadisticas = document.getElementById("estadisticas");
   const seccionIngresar = document.getElementById("ingresar");
-  const seccionEducacion = document.getElementById("educacion"); 
+  const seccionEducacion = document.getElementById("educacion");
 
 
   const panelUsuario = document.getElementById("panel-usuario");
@@ -54,7 +54,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const detalleUsuarioAdmin = document.getElementById("detalle-usuario-admin");
   const formEditarUsuarioAdmin = document.getElementById("form-editar-usuario-admin");
   const btnCancelarEdicionUsuario = document.getElementById("btn-cancelar-edicion-usuario");
-  
+
+  const contenedorHectareas = document.getElementById("contenedor-hectareas");
+  const inputHectareas = document.getElementById("hectareas");
+
   let usuariosAdmin = []; // lista de usuarios para el panel admin
   // =========================
   // 1. Estado global
@@ -75,12 +78,12 @@ document.addEventListener("DOMContentLoaded", () => {
   let btnSubmitReporte = null;
   let textoOriginalBtnReporte = "";
 
-if (formReporte) {
-  btnSubmitReporte = formReporte.querySelector('button[type="submit"]');
-  if (btnSubmitReporte) {
-    textoOriginalBtnReporte = btnSubmitReporte.textContent;
+  if (formReporte) {
+    btnSubmitReporte = formReporte.querySelector('button[type="submit"]');
+    if (btnSubmitReporte) {
+      textoOriginalBtnReporte = btnSubmitReporte.textContent;
+    }
   }
-}
 
   // 2. Pestañas LOGIN / REGISTRO
   // =========================
@@ -126,85 +129,85 @@ if (formReporte) {
 
   // 4. Control de VISIBILIDAD por ROL
   // =========================
-function ocultarElemento(el) {
-  if (!el) return;
-  el.classList.add("oculto");
-  el.style.display = "none";      // ⬅ fuerza que desaparezca
-}
+  function ocultarElemento(el) {
+    if (!el) return;
+    el.classList.add("oculto");
+    el.style.display = "none";      // ⬅ fuerza que desaparezca
+  }
 
-function mostrarElemento(el) {
-  if (!el) return;
-  el.classList.remove("oculto");
-  el.style.display = "block";     // ⬅ fuerza que se vea
-}
+  function mostrarElemento(el) {
+    if (!el) return;
+    el.classList.remove("oculto");
+    el.style.display = "block";     // ⬅ fuerza que se vea
+  }
 
 
 
-function aplicarEstadoSesion(scrollDestino = null) {
-  // === CASO 1: NO HAY SESIÓN ===
-  if (!sesionActual) {
+  function aplicarEstadoSesion(scrollDestino = null) {
+    // === CASO 1: NO HAY SESIÓN ===
+    if (!sesionActual) {
+      mostrarElemento(seccionInicio);
+      mostrarElemento(seccionEducacion);
+      mostrarElemento(seccionIngresar);
+
+      ocultarElemento(seccionReportar);
+      ocultarElemento(seccionMapa);
+      ocultarElemento(seccionEstadisticas);
+      ocultarElemento(panelUsuario);
+      ocultarElemento(panelAutoridad);
+      ocultarElemento(panelAdmin);
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // === CASO 2: HAY SESIÓN ===
+    const rol = (sesionActual.rol || "").toLowerCase();
+    console.log("Rol actual:", rol);
+
+    ocultarElemento(seccionIngresar);
+
+    // Secciones comunes para todos los logueados
     mostrarElemento(seccionInicio);
     mostrarElemento(seccionEducacion);
-    mostrarElemento(seccionIngresar);
+    mostrarElemento(seccionReportar);   // ✅ todos ven reportar
+    mostrarElemento(seccionMapa);
+    mostrarElemento(seccionEstadisticas);
 
-    ocultarElemento(seccionReportar);
-    ocultarElemento(seccionMapa);
-    ocultarElemento(seccionEstadisticas);
+    // Ocultamos todos los paneles
     ocultarElemento(panelUsuario);
     ocultarElemento(panelAutoridad);
     ocultarElemento(panelAdmin);
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
-    return;
-  }
-
-  // === CASO 2: HAY SESIÓN ===
-  const rol = (sesionActual.rol || "").toLowerCase();
-  console.log("Rol actual:", rol);
-
-  ocultarElemento(seccionIngresar);
-
-  // Secciones comunes para todos los logueados
-  mostrarElemento(seccionInicio);
-  mostrarElemento(seccionEducacion);
-  mostrarElemento(seccionReportar);   // ✅ todos ven reportar
-  mostrarElemento(seccionMapa);
-  mostrarElemento(seccionEstadisticas);
-
-  // Ocultamos todos los paneles
-  ocultarElemento(panelUsuario);
-  ocultarElemento(panelAutoridad);
-  ocultarElemento(panelAdmin);
-
-  if (rol === "ciudadano") {
-    mostrarElemento(panelUsuario);
-    if (scrollDestino === "usuario" && panelUsuario) {
-      panelUsuario.scrollIntoView({ behavior: "smooth" });
+    if (rol === "ciudadano") {
+      mostrarElemento(panelUsuario);
+      if (scrollDestino === "usuario" && panelUsuario) {
+        panelUsuario.scrollIntoView({ behavior: "smooth" });
+      }
+    } else if (rol === "autoridad") {
+      mostrarElemento(panelAutoridad);
+      if (scrollDestino === "autoridad" && panelAutoridad) {
+        panelAutoridad.scrollIntoView({ behavior: "smooth" });
+      }
+    } else if (rol === "admin") {
+      mostrarElemento(panelAutoridad);
+      mostrarElemento(panelAdmin);
+      if (scrollDestino === "admin" && panelAdmin) {
+        panelAdmin.scrollIntoView({ behavior: "smooth" });
+      }
     }
-  } else if (rol === "autoridad") {
-    mostrarElemento(panelAutoridad);
-    if (scrollDestino === "autoridad" && panelAutoridad) {
-      panelAutoridad.scrollIntoView({ behavior: "smooth" });
-    }
-  } else if (rol === "admin") {
-    mostrarElemento(panelAutoridad);
-    mostrarElemento(panelAdmin);
-    if (scrollDestino === "admin" && panelAdmin) {
-      panelAdmin.scrollIntoView({ behavior: "smooth" });
+
+    // ⬇ Aquí forzamos al mapa a recalcular tamaño
+    inicializarMapa();
+    if (mapa) {
+      setTimeout(() => {
+        mapa.invalidateSize();
+      }, 300);
     }
   }
-
-  // ⬇ Aquí forzamos al mapa a recalcular tamaño
-  inicializarMapa();
-  if (mapa) {
-    setTimeout(() => {
-      mapa.invalidateSize();
-    }, 300);
-  }
-}
 
   // X. AUTORIDADES POR TIPO DE ACTIVIDAD
-function etiquetaEspecialidad(especialidad) {
+  function etiquetaEspecialidad(especialidad) {
     const map = {
       tala: "Tala de árboles",
       quema: "Quema",
@@ -353,51 +356,51 @@ function etiquetaEspecialidad(especialidad) {
     }
   }
   async function cargarUsuariosAdmin() {
-  if (!tbodyUsuariosAdmin) return;
+    if (!tbodyUsuariosAdmin) return;
 
-  try {
-    const resp = await fetch("../php/obtener_usuarios.php");
-    const data = await resp.json();
+    try {
+      const resp = await fetch("../php/obtener_usuarios.php");
+      const data = await resp.json();
 
-    if (!data.ok) {
-      console.warn("No se pudieron obtener usuarios:", data.mensaje);
+      if (!data.ok) {
+        console.warn("No se pudieron obtener usuarios:", data.mensaje);
+        usuariosAdmin = [];
+      } else {
+        usuariosAdmin = data.data || [];
+      }
+
+      renderizarTablaUsuariosAdmin();
+    } catch (error) {
+      console.error("Error al obtener usuarios:", error);
       usuariosAdmin = [];
-    } else {
-      usuariosAdmin = data.data || [];
+      renderizarTablaUsuariosAdmin();
     }
+  }
 
-    renderizarTablaUsuariosAdmin();
-  } catch (error) {
-    console.error("Error al obtener usuarios:", error);
-    usuariosAdmin = [];
-    renderizarTablaUsuariosAdmin();
-  }
-  }
-  
   function renderizarTablaUsuariosAdmin() {
-  if (!tbodyUsuariosAdmin) return;
+    if (!tbodyUsuariosAdmin) return;
 
-  tbodyUsuariosAdmin.innerHTML = "";
+    tbodyUsuariosAdmin.innerHTML = "";
 
-  if (!usuariosAdmin.length) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    if (!usuariosAdmin.length) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
       <td colspan="7" style="text-align:center; padding:10px;">
         No hay usuarios registrados.
       </td>
     `;
-    tbodyUsuariosAdmin.appendChild(tr);
-    if (detalleUsuarioAdmin) detalleUsuarioAdmin.classList.add("oculto");
-    return;
-  }
+      tbodyUsuariosAdmin.appendChild(tr);
+      if (detalleUsuarioAdmin) detalleUsuarioAdmin.classList.add("oculto");
+      return;
+    }
 
-  usuariosAdmin.forEach((u) => {
-    const tr = document.createElement("tr");
+    usuariosAdmin.forEach((u) => {
+      const tr = document.createElement("tr");
 
-    const nombreCompleto = `${u.nombre || ""} ${u.apellido || ""}`.trim();
-    const especialidadLabel = etiquetaEspecialidad(u.especialidad || "");
+      const nombreCompleto = `${u.nombre || ""} ${u.apellido || ""}`.trim();
+      const especialidadLabel = etiquetaEspecialidad(u.especialidad || "");
 
-    tr.innerHTML = `
+      tr.innerHTML = `
       <td>${u.id_usuario}</td>
       <td>${nombreCompleto || "(Sin nombre)"}</td>
       <td>${u.correo || ""}</td>
@@ -414,62 +417,92 @@ function etiquetaEspecialidad(especialidad) {
       </td>
     `;
 
-    tbodyUsuariosAdmin.appendChild(tr);
-  });
+      tbodyUsuariosAdmin.appendChild(tr);
+    });
   }
   function mostrarDetalleUsuarioAdmin(usuario) {
-  if (!detalleUsuarioAdmin || !formEditarUsuarioAdmin) return;
+    if (!detalleUsuarioAdmin || !formEditarUsuarioAdmin) return;
 
-  detalleUsuarioAdmin.classList.remove("oculto");
+    detalleUsuarioAdmin.classList.remove("oculto");
 
-  document.getElementById("adminUserId").value = usuario.id_usuario;
-  document.getElementById("adminUserNombre").value = usuario.nombre || "";
-  document.getElementById("adminUserApellido").value = usuario.apellido || "";
-  document.getElementById("adminUserCorreo").value = usuario.correo || "";
-  document.getElementById("adminUserTelefono").value = usuario.telefono || "";
-  document.getElementById("adminUserMunicipio").value = usuario.municipio || "";
-  document.getElementById("adminUserVereda").value = usuario.vereda_barrio || "";
-  document.getElementById("adminUserRol").value = (usuario.tipo_usuario || "").toLowerCase();
+    document.getElementById("adminUserId").value = usuario.id_usuario;
+    document.getElementById("adminUserNombre").value = usuario.nombre || "";
+    document.getElementById("adminUserApellido").value = usuario.apellido || "";
+    document.getElementById("adminUserCorreo").value = usuario.correo || "";
+    document.getElementById("adminUserTelefono").value = usuario.telefono || "";
+    document.getElementById("adminUserMunicipio").value = usuario.municipio || "";
+    document.getElementById("adminUserVereda").value = usuario.vereda_barrio || "";
+    document.getElementById("adminUserRol").value = (usuario.tipo_usuario || "").toLowerCase();
 
-  const esp = usuario.especialidad || "";
-  const selectEsp = document.getElementById("adminUserEspecialidad");
-  if (selectEsp) {
-    selectEsp.value = esp;
-  }
-
-  const inputClave = document.getElementById("adminUserNuevaClave");
-  if (inputClave) {
-    inputClave.value = ""; // nunca mostramos la clave actual
-  }
-  }
-  if (tbodyUsuariosAdmin) {
-  tbodyUsuariosAdmin.addEventListener("click", async (e) => {
-    const btnEditar = e.target.closest(".btn-editar-usuario");
-    const btnEliminar = e.target.closest(".btn-eliminar-usuario");
-
-    if (btnEditar) {
-      const id = Number(btnEditar.dataset.id);
-      const usuario = usuariosAdmin.find(
-        (u) => Number(u.id_usuario) === id
-      );
-      if (!usuario) return;
-      mostrarDetalleUsuarioAdmin(usuario);
-      return;
+    const esp = usuario.especialidad || "";
+    const selectEsp = document.getElementById("adminUserEspecialidad");
+    if (selectEsp) {
+      selectEsp.value = esp;
     }
 
-    if (btnEliminar) {
-      const id = Number(btnEliminar.dataset.id);
+    const inputClave = document.getElementById("adminUserNuevaClave");
+    if (inputClave) {
+      inputClave.value = ""; // nunca mostramos la clave actual
+    }
+  }
+  if (tbodyUsuariosAdmin) {
+    tbodyUsuariosAdmin.addEventListener("click", async (e) => {
+      const btnEditar = e.target.closest(".btn-editar-usuario");
+      const btnEliminar = e.target.closest(".btn-eliminar-usuario");
 
-      const confirmar = confirm(
-        "¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer."
-      );
-      if (!confirmar) return;
+      if (btnEditar) {
+        const id = Number(btnEditar.dataset.id);
+        const usuario = usuariosAdmin.find(
+          (u) => Number(u.id_usuario) === id
+        );
+        if (!usuario) return;
+        mostrarDetalleUsuarioAdmin(usuario);
+        return;
+      }
 
-      const fd = new FormData();
-      fd.append("id_usuario", id);
+      if (btnEliminar) {
+        const id = Number(btnEliminar.dataset.id);
+
+        const confirmar = confirm(
+          "¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer."
+        );
+        if (!confirmar) return;
+
+        const fd = new FormData();
+        fd.append("id_usuario", id);
+
+        try {
+          const resp = await fetch("../php/eliminar_usuario.php", {
+            method: "POST",
+            body: fd,
+          });
+          const data = await resp.json();
+
+          alert(data.mensaje || "Respuesta del servidor.");
+
+          if (data.ok) {
+            await cargarUsuariosAdmin();
+          }
+        } catch (error) {
+          console.error("Error al eliminar usuario:", error);
+          alert("Error de conexión con el servidor al eliminar el usuario.");
+        }
+      }
+    });
+  }
+  if (formEditarUsuarioAdmin) {
+    formEditarUsuarioAdmin.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!sesionActual || sesionActual.rol !== "admin") {
+        alert("Solo el administrador puede actualizar usuarios.");
+        return;
+      }
+
+      const fd = new FormData(formEditarUsuarioAdmin);
 
       try {
-        const resp = await fetch("../php/eliminar_usuario.php", {
+        const resp = await fetch("../php/actualizar_usuario.php", {
           method: "POST",
           body: fd,
         });
@@ -478,114 +511,84 @@ function etiquetaEspecialidad(especialidad) {
         alert(data.mensaje || "Respuesta del servidor.");
 
         if (data.ok) {
+          detalleUsuarioAdmin.classList.add("oculto");
           await cargarUsuariosAdmin();
         }
       } catch (error) {
-        console.error("Error al eliminar usuario:", error);
-        alert("Error de conexión con el servidor al eliminar el usuario.");
+        console.error("Error al actualizar usuario:", error);
+        alert("Error de conexión con el servidor al actualizar el usuario.");
       }
-    }
-  });
+    });
   }
-  if (formEditarUsuarioAdmin) {
-  formEditarUsuarioAdmin.addEventListener("submit", async (e) => {
-    e.preventDefault();
 
-    if (!sesionActual || sesionActual.rol !== "admin") {
-      alert("Solo el administrador puede actualizar usuarios.");
-      return;
-    }
+  if (btnCancelarEdicionUsuario && detalleUsuarioAdmin) {
+    btnCancelarEdicionUsuario.addEventListener("click", () => {
+      detalleUsuarioAdmin.classList.add("oculto");
+    });
+  }
 
-    const fd = new FormData(formEditarUsuarioAdmin);
+  // 7. LOGIN
+  if (formLogin) {
+    formLogin.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    try {
-      const resp = await fetch("../php/actualizar_usuario.php", {
-        method: "POST",
-        body: fd,
-      });
-      const data = await resp.json();
+      const formData = new FormData(formLogin);
 
-      alert(data.mensaje || "Respuesta del servidor.");
+      try {
+        const resp = await fetch("../php/login.php", {
+          method: "POST",
+          body: formData,
+        });
 
-      if (data.ok) {
-        detalleUsuarioAdmin.classList.add("oculto");
-        await cargarUsuariosAdmin();
+        const data = await resp.json();
+        console.log("Respuesta login:", data);
+
+        if (!data.ok) {
+          alert(data.mensaje || "Error al iniciar sesión.");
+          return;
+        }
+
+        // Guardamos la sesión en memoria JS
+        sesionActual = {
+          id_usuario: data.id_usuario,
+          nombre: data.nombre,
+          rol: (data.rol || "").toLowerCase()  // 👈 aseguramos minúsculas
+        };
+
+        alert(
+          `Bienvenido, ${sesionActual.nombre} (${sesionActual.rol}). Sesión iniciada.`
+        );
+        console.log("SesionActual en JS:", sesionActual);
+
+        // Decidir hacia dónde hacer scroll según el rol
+        let destino = null;
+        if (sesionActual.rol === "ciudadano") destino = "usuario";
+        else if (sesionActual.rol === "autoridad") destino = "autoridad";
+        else if (sesionActual.rol === "admin") destino = "admin";
+
+        // Aplicar visibilidad según rol (esto ya muestra REPORTAR para todos)
+        aplicarEstadoSesion(destino);
+
+        // Cargamos reportes generales (mapa, stats, autoridad/admin)
+        await cargarReportesDesdeServidor();
+
+        // Si es ciudadano, también cargamos sus propios reportes
+        if (sesionActual.rol === "ciudadano") {
+          await cargarMisReportes();
+        }
+        if (sesionActual.rol === "admin") {
+          await cargarUsuariosAdmin();
+        }
+        if (sesionActual.rol === "autoridad") {
+          await cargarUsuariosAdmin();
+        }
+
+      } catch (error) {
+        console.error("Error en login:", error);
+        alert("Error de conexión con el servidor al iniciar sesión.");
       }
-    } catch (error) {
-      console.error("Error al actualizar usuario:", error);
-      alert("Error de conexión con el servidor al actualizar el usuario.");
-    }
-  });
-}
-
-if (btnCancelarEdicionUsuario && detalleUsuarioAdmin) {
-  btnCancelarEdicionUsuario.addEventListener("click", () => {
-    detalleUsuarioAdmin.classList.add("oculto");
-  });
-}
-
-// 7. LOGIN
-if (formLogin) {
-  formLogin.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const formData = new FormData(formLogin);
-
-    try {
-      const resp = await fetch("../php/login.php", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await resp.json();
-      console.log("Respuesta login:", data);
-
-      if (!data.ok) {
-        alert(data.mensaje || "Error al iniciar sesión.");
-        return;
-      }
-
-      // Guardamos la sesión en memoria JS
-      sesionActual = {
-        id_usuario: data.id_usuario,
-        nombre: data.nombre,
-        rol: (data.rol || "").toLowerCase()  // 👈 aseguramos minúsculas
-      };
-
-      alert(
-        `Bienvenido, ${sesionActual.nombre} (${sesionActual.rol}). Sesión iniciada.`
-      );
-      console.log("SesionActual en JS:", sesionActual);
-
-      // Decidir hacia dónde hacer scroll según el rol
-      let destino = null;
-      if (sesionActual.rol === "ciudadano") destino = "usuario";
-      else if (sesionActual.rol === "autoridad") destino = "autoridad";
-      else if (sesionActual.rol === "admin") destino = "admin";
-
-      // Aplicar visibilidad según rol (esto ya muestra REPORTAR para todos)
-      aplicarEstadoSesion(destino);
-
-      // Cargamos reportes generales (mapa, stats, autoridad/admin)
-      await cargarReportesDesdeServidor();
-
-      // Si es ciudadano, también cargamos sus propios reportes
-      if (sesionActual.rol === "ciudadano") {
-        await cargarMisReportes();
-      }
-      if (sesionActual.rol === "admin") {
-        await cargarUsuariosAdmin();
-      }
-      if (sesionActual.rol === "autoridad") {
-        await cargarUsuariosAdmin();
-      }
-      
-    } catch (error) {
-      console.error("Error en login:", error);
-      alert("Error de conexión con el servidor al iniciar sesión.");
-    }
-  });
-}
+    });
+  }
 
   // 8. REGISTRO (solo ciudadanos)
   // =========================
@@ -718,7 +721,7 @@ if (formLogin) {
   // =========================
   // 🔟 TABLA PANEL AUTORIDAD
   // =========================
-    function renderizarTablaAutoridad() {
+  function renderizarTablaAutoridad() {
     if (!tbodyAutoridad) return;
 
     tbodyAutoridad.innerHTML = "";
@@ -749,9 +752,8 @@ if (formLogin) {
     lista.forEach((r) => {
       const tr = document.createElement("tr");
 
-      const nombreCiudadano = `${r.ciudadano_nombre || ""} ${
-        r.ciudadano_apellido || ""
-      }`.trim();
+      const nombreCiudadano = `${r.ciudadano_nombre || ""} ${r.ciudadano_apellido || ""
+        }`.trim();
 
       tr.innerHTML = `
         <td>${r.id_reporte}</td>
@@ -785,9 +787,8 @@ if (formLogin) {
       if (span) span.textContent = valor || "";
     };
 
-    const nombreCiudadano = `${reporte.ciudadano_nombre || ""} ${
-      reporte.ciudadano_apellido || ""
-    }`.trim();
+    const nombreCiudadano = `${reporte.ciudadano_nombre || ""} ${reporte.ciudadano_apellido || ""
+      }`.trim();
 
     mapCampo("ciudadano", nombreCiudadano);
     mapCampo("correo", reporte.ciudadano_correo || "");
@@ -797,7 +798,7 @@ if (formLogin) {
     mapCampo(
       "fecha-hora",
       reporte.fecha_observacion +
-        (reporte.hora_observacion ? " " + reporte.hora_observacion : "")
+      (reporte.hora_observacion ? " " + reporte.hora_observacion : "")
     );
     mapCampo("hectareas", reporte.hectareas_afectadas || "No especificado");
     mapCampo("ecosistema", reporte.ecosistema || "No especificado");
@@ -891,13 +892,13 @@ if (formLogin) {
   // 1️⃣1. TABLA PANEL CIUDADANO (MIS REPORTES)
   // =========================
   function renderizarTablaUsuario() {
-  if (!tbodyMisReportes) return;
+    if (!tbodyMisReportes) return;
 
-  tbodyMisReportes.innerHTML = "";
+    tbodyMisReportes.innerHTML = "";
 
-  misReportes.forEach((r) => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
+    misReportes.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
       <td>${r.id_reporte}</td>
       <td>${r.fecha_observacion || ""}</td>
       <td>${r.municipio || ""}</td>
@@ -915,13 +916,13 @@ if (formLogin) {
         </button>
       </td>
     `;
-    tbodyMisReportes.appendChild(tr);
-  });
+      tbodyMisReportes.appendChild(tr);
+    });
 
-  if (misReportes.length === 0 && detalleMiReporte) {
-    detalleMiReporte.classList.add("oculto");
+    if (misReportes.length === 0 && detalleMiReporte) {
+      detalleMiReporte.classList.add("oculto");
+    }
   }
-}
 
 
   function mostrarDetalleMiReporte(reporte) {
@@ -942,7 +943,7 @@ if (formLogin) {
     mapCampo(
       "fecha-hora",
       reporte.fecha_observacion +
-        (reporte.hora_observacion ? " " + reporte.hora_observacion : "")
+      (reporte.hora_observacion ? " " + reporte.hora_observacion : "")
     );
     mapCampo("hectareas", reporte.hectareas_afectadas || "No especificado");
     mapCampo("ecosistema", reporte.ecosistema || "No especificado");
@@ -959,107 +960,107 @@ if (formLogin) {
     }
   }
 
-    if (tbodyMisReportes) {
-  tbodyMisReportes.addEventListener("click", async (e) => {
-    const btnVer = e.target.closest(".btn-ver-mi-reporte");
-    const btnEditar = e.target.closest(".btn-editar-mi-reporte");
-    const btnEliminar = e.target.closest(".btn-eliminar-mi-reporte");
+  if (tbodyMisReportes) {
+    tbodyMisReportes.addEventListener("click", async (e) => {
+      const btnVer = e.target.closest(".btn-ver-mi-reporte");
+      const btnEditar = e.target.closest(".btn-editar-mi-reporte");
+      const btnEliminar = e.target.closest(".btn-eliminar-mi-reporte");
 
-    if (btnVer) {
-      const id = Number(btnVer.dataset.id);
-      const reporte = misReportes.find(
-        (r) => Number(r.id_reporte) === Number(id)
-      );
-      if (reporte) {
-        mostrarDetalleMiReporte(reporte);
-      }
-      return;
-    }
-
-    if (btnEditar) {
-      if (!sesionActual || sesionActual.rol !== "ciudadano") {
-        alert("Solo el ciudadano dueño del reporte puede editarlo.");
-        return;
-      }
-
-      const id = Number(btnEditar.dataset.id);
-      const reporte = misReportes.find(
-        (r) => Number(r.id_reporte) === Number(id)
-      );
-      if (!reporte) return;
-
-      // Entramos en modo edición
-      reporteEnEdicion = reporte;
-      if (btnSubmitReporte) {
-        btnSubmitReporte.textContent = "Guardar cambios";
-      }
-
-      // Rellenar el formulario de reportar
-      document.getElementById("tipoActividad").value =
-        reporte.tipo_actividad || "";
-      document.getElementById("municipio").value = reporte.municipio || "";
-      document.getElementById("vereda").value = reporte.vereda_zona || "";
-      document.getElementById("coordenadas").value =
-        reporte.coordenadas || "";
-      document.getElementById("fecha").value =
-        reporte.fecha_observacion || "";
-      document.getElementById("hora").value =
-        reporte.hora_observacion || "";
-      document.getElementById("hectareas").value =
-        reporte.hectareas_afectadas || "";
-      document.getElementById("ecosistema").value =
-        reporte.ecosistema || "";
-      document.getElementById("descripcion").value =
-        reporte.descripcion || "";
-
-      // El input file de evidencia NO se puede rellenar por seguridad,
-      // si el usuario quiere cambiar la foto, selecciona una nueva.
-
-      // Llevar al usuario a la sección de reporte
-      if (seccionReportar) {
-        seccionReportar.scrollIntoView({ behavior: "smooth" });
-      }
-
-      alert("Estás editando el reporte ID " + reporte.id_reporte);
-      return;
-    }
-
-    if (btnEliminar) {
-      if (!sesionActual || sesionActual.rol !== "ciudadano") {
-        alert("Solo el ciudadano dueño del reporte puede eliminarlo.");
-        return;
-      }
-
-      const id = Number(btnEliminar.dataset.id);
-      const confirmar = confirm(
-        "¿Seguro que deseas eliminar este reporte? Esta acción no se puede deshacer."
-      );
-      if (!confirmar) return;
-
-      const fd = new FormData();
-      fd.append("id_reporte", id);
-      fd.append("id_usuario", sesionActual.id_usuario);
-
-      try {
-        const resp = await fetch("../php/eliminar_reporte.php", {
-          method: "POST",
-          body: fd,
-        });
-        const data = await resp.json();
-
-        alert(data.mensaje || "Respuesta del servidor.");
-
-        if (data.ok) {
-          await cargarMisReportes();
-          await cargarReportesDesdeServidor();
+      if (btnVer) {
+        const id = Number(btnVer.dataset.id);
+        const reporte = misReportes.find(
+          (r) => Number(r.id_reporte) === Number(id)
+        );
+        if (reporte) {
+          mostrarDetalleMiReporte(reporte);
         }
-      } catch (error) {
-        console.error("Error al eliminar reporte:", error);
-        alert("Error de conexión con el servidor al eliminar el reporte.");
+        return;
       }
-    }
-  });
-}
+
+      if (btnEditar) {
+        if (!sesionActual || sesionActual.rol !== "ciudadano") {
+          alert("Solo el ciudadano dueño del reporte puede editarlo.");
+          return;
+        }
+
+        const id = Number(btnEditar.dataset.id);
+        const reporte = misReportes.find(
+          (r) => Number(r.id_reporte) === Number(id)
+        );
+        if (!reporte) return;
+
+        // Entramos en modo edición
+        reporteEnEdicion = reporte;
+        if (btnSubmitReporte) {
+          btnSubmitReporte.textContent = "Guardar cambios";
+        }
+
+        // Rellenar el formulario de reportar
+        document.getElementById("tipoActividad").value =
+          reporte.tipo_actividad || "";
+        document.getElementById("municipio").value = reporte.municipio || "";
+        document.getElementById("vereda").value = reporte.vereda_zona || "";
+        document.getElementById("coordenadas").value =
+          reporte.coordenadas || "";
+        document.getElementById("fecha").value =
+          reporte.fecha_observacion || "";
+        document.getElementById("hora").value =
+          reporte.hora_observacion || "";
+        document.getElementById("hectareas").value =
+          reporte.hectareas_afectadas || "";
+        document.getElementById("ecosistema").value =
+          reporte.ecosistema || "";
+        document.getElementById("descripcion").value =
+          reporte.descripcion || "";
+
+        // El input file de evidencia NO se puede rellenar por seguridad,
+        // si el usuario quiere cambiar la foto, selecciona una nueva.
+
+        // Llevar al usuario a la sección de reporte
+        if (seccionReportar) {
+          seccionReportar.scrollIntoView({ behavior: "smooth" });
+        }
+
+        alert("Estás editando el reporte ID " + reporte.id_reporte);
+        return;
+      }
+
+      if (btnEliminar) {
+        if (!sesionActual || sesionActual.rol !== "ciudadano") {
+          alert("Solo el ciudadano dueño del reporte puede eliminarlo.");
+          return;
+        }
+
+        const id = Number(btnEliminar.dataset.id);
+        const confirmar = confirm(
+          "¿Seguro que deseas eliminar este reporte? Esta acción no se puede deshacer."
+        );
+        if (!confirmar) return;
+
+        const fd = new FormData();
+        fd.append("id_reporte", id);
+        fd.append("id_usuario", sesionActual.id_usuario);
+
+        try {
+          const resp = await fetch("../php/eliminar_reporte.php", {
+            method: "POST",
+            body: fd,
+          });
+          const data = await resp.json();
+
+          alert(data.mensaje || "Respuesta del servidor.");
+
+          if (data.ok) {
+            await cargarMisReportes();
+            await cargarReportesDesdeServidor();
+          }
+        } catch (error) {
+          console.error("Error al eliminar reporte:", error);
+          alert("Error de conexión con el servidor al eliminar el reporte.");
+        }
+      }
+    });
+  }
 
   // 1️⃣2. PANEL ADMIN: crear autoridad
   // =========================
@@ -1118,102 +1119,101 @@ if (formLogin) {
     actualizarMarcadores();
   }
 
- function obtenerLatLng(reporte) {
-  // Si el reporte tiene coordenadas tipo "9.31, -75.40"
-  if (reporte.coordenadas) {
-    const partes = String(reporte.coordenadas).split(",");
-    if (partes.length !== 2) return null;
+  function obtenerLatLng(reporte) {
+    // Si el reporte tiene coordenadas tipo "9.31, -75.40"
+    if (reporte.coordenadas) {
+      const partes = String(reporte.coordenadas).split(",");
+      if (partes.length !== 2) return null;
 
-    const lat = parseFloat(partes[0].trim());
-    const lon = parseFloat(partes[1].trim());
-    if (isNaN(lat) || isNaN(lon)) return null;
+      const lat = parseFloat(partes[0].trim());
+      const lon = parseFloat(partes[1].trim());
+      if (isNaN(lat) || isNaN(lon)) return null;
 
-    return [lat, lon];
+      return [lat, lon];
+    }
+
+    // Si NO hay coordenadas, por ahora no ponemos marcador
+    return null;
   }
 
-  // Si NO hay coordenadas, por ahora no ponemos marcador
-  return null;
-}
+  function actualizarMarcadores() {
+    if (!mapa || !capaMarkers) return;
 
-function actualizarMarcadores() {
-  if (!mapa || !capaMarkers) return;
+    capaMarkers.clearLayers();
 
-  capaMarkers.clearLayers();
+    reportes.forEach((r) => {
+      const latLng = obtenerLatLng(r);
+      if (!latLng) return; // sin coordenadas -> sin marcador
 
-  reportes.forEach((r) => {
-    const latLng = obtenerLatLng(r);
-    if (!latLng) return; // sin coordenadas -> sin marcador
-
-    const popupHtml = `
+      const popupHtml = `
       <strong>${(r.tipo_actividad || "").toUpperCase()}</strong><br/>
       <span>${r.municipio || ""} - ${r.vereda_zona || ""}</span><br/>
       <span>Fecha: ${r.fecha_observacion || ""}</span><br/>
-      <span>Ha afectadas: ${
-        r.hectareas_afectadas ? r.hectareas_afectadas : "No especificado"
-      }</span>
+      <span>Ha afectadas: ${r.hectareas_afectadas ? r.hectareas_afectadas : "No especificado"
+        }</span>
     `;
 
-    L.marker(latLng).addTo(capaMarkers).bindPopup(popupHtml);
-  });
-}
+      L.marker(latLng).addTo(capaMarkers).bindPopup(popupHtml);
+    });
+  }
 
 
   //  FORMULARIO REPORTE (solo ciudadano)
 
-if (formReporte) {
-  formReporte.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  if (formReporte) {
+    formReporte.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    if (!sesionActual) {
-      alert("Debes iniciar sesión para registrar un reporte.");
-      return;
-    }
-
-    const tipoActividad = document.getElementById("tipoActividad").value;
-    const municipio = document.getElementById("municipio").value.trim();
-    const vereda = document.getElementById("vereda").value.trim();
-    const coordenadas = document.getElementById("coordenadas").value.trim();
-    const fecha = document.getElementById("fecha").value;
-    const hora = document.getElementById("hora").value;
-    const hectareas = document.getElementById("hectareas").value;
-    const ecosistema = document.getElementById("ecosistema").value;
-    const descripcion = document
-      .getElementById("descripcion")
-      .value.trim();
-    const idAutoridad = document.getElementById("idAutoridadReporte").value;
-
-    if (!tipoActividad || !municipio || !vereda || !fecha || !descripcion || !idAutoridad) {
-      alert("Por favor completa los campos obligatorios del reporte.");
-      return;
-    }
-
-    const formData = new FormData(formReporte);
-    formData.append("id_usuario", sesionActual.id_usuario);
-    formData.append("id_autoridad", idAutoridad);
-
-    try {
-      const resp = await fetch("../php/crear_reporte.php", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await resp.json();
-
-      alert(data.mensaje || "Respuesta del servidor.");
-
-      if (data.ok) {
-        formReporte.reset();
-        await cargarReportesDesdeServidor();
-        await cargarMisReportes();
+      if (!sesionActual) {
+        alert("Debes iniciar sesión para registrar un reporte.");
+        return;
       }
-    } catch (error) {
-      console.error("Error al enviar reporte:", error);
-      alert("Error de conexión con el servidor al registrar el reporte.");
-    }
-  });
-}
 
-    // 1️⃣5. INICIO
-   // 1️⃣5. INICIO
+      const tipoActividad = document.getElementById("tipoActividad").value;
+      const municipio = document.getElementById("municipio").value.trim();
+      const vereda = document.getElementById("vereda").value.trim();
+      const coordenadas = document.getElementById("coordenadas").value.trim();
+      const fecha = document.getElementById("fecha").value;
+      const hora = document.getElementById("hora").value;
+      const hectareas = document.getElementById("hectareas").value;
+      const ecosistema = document.getElementById("ecosistema").value;
+      const descripcion = document
+        .getElementById("descripcion")
+        .value.trim();
+      const idAutoridad = document.getElementById("idAutoridadReporte").value;
+
+      if (!tipoActividad || !municipio || !vereda || !fecha || !descripcion || !idAutoridad) {
+        alert("Por favor completa los campos obligatorios del reporte.");
+        return;
+      }
+
+      const formData = new FormData(formReporte);
+      formData.append("id_usuario", sesionActual.id_usuario);
+      formData.append("id_autoridad", idAutoridad);
+
+      try {
+        const resp = await fetch("../php/crear_reporte.php", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await resp.json();
+
+        alert(data.mensaje || "Respuesta del servidor.");
+
+        if (data.ok) {
+          formReporte.reset();
+          await cargarReportesDesdeServidor();
+          await cargarMisReportes();
+        }
+      } catch (error) {
+        console.error("Error al enviar reporte:", error);
+        alert("Error de conexión con el servidor al registrar el reporte.");
+      }
+    });
+  }
+
+  // 1️⃣5. INICIO
+  // 1️⃣5. INICIO
   aplicarEstadoSesion();
 
   // Cuando el usuario cambie el tipo de actividad, cargamos autoridades
