@@ -586,6 +586,7 @@ section p {
   min-width: 2.5rem;
   text-align: center;
 }
+
 /* ===== RESPONSIVE + MICROINTERACCIONES ===== */
 @media (max-width: 780px) {
   header {
@@ -657,4 +658,186 @@ footer {
 ::-webkit-scrollbar-thumb {
   background: #0ea5e9;
   border-radius: 10px;
+}
+/* ==============================================
+   🗺️ CAMPO COORDENADAS + MODAL MAPA (CORREGIDO)
+   ============================================== */
+
+/* Grupo de coordenadas */
+.grupo-coordenadas {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.grupo-coordenadas input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 14px;
+    background-color: var(--gris-neblina, #f1f5f9);
+    border: 2px dashed var(--azul-cielo, #38bdf8);
+    border-radius: 12px;
+    color: var(--azul-cobalto);
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.grupo-coordenadas input:focus {
+    outline: none;
+    border-color: var(--turquesa-glaciar);
+    background: white;
+}
+
+/* Botón de abrir mapa */
+#btn-abrir-mapa {
+    flex-shrink: 0;
+    white-space: nowrap;
+    font-size: 0.85rem;
+    padding: 10px 18px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(95deg, #0ea5e9, #2dd4bf);
+    border: none;
+    border-radius: 60px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#btn-abrir-mapa:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(14, 165, 233, 0.3);
+}
+
+/* ===== MODAL MAPA – VERSIÓN ESTABLE SIN DESBORDES ===== */
+.modal-mapa-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 43, 77, 0.9);
+    backdrop-filter: blur(6px);
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-mapa-overlay.activo {
+    display: flex;
+}
+
+.modal-mapa-contenido {
+    width: 90%;
+    max-width: 850px;
+    height: auto;
+    max-height: 85vh;
+    background: white;
+    border-radius: 28px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
+    animation: modalFadeIn 0.25s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-mapa-header {
+    flex-shrink: 0;
+    padding: 20px 24px 10px 24px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-mapa-header h3 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: var(--azul-cobalto);
+}
+
+.modal-mapa-header p {
+    margin: 6px 0 0 0;
+    color: #475569;
+    font-size: 0.85rem;
+}
+
+/* Contenedor del mapa – ocupa todo el espacio disponible */
+#contenedor-mapa-reporte {
+    flex: 1;
+    width: 100%;
+    min-height: 300px;
+    background: #eef2ff;
+    position: relative;
+}
+
+/* Asegurar que Leaflet se adapte */
+#contenedor-mapa-reporte .leaflet-container {
+    width: 100%;
+    height: 100%;
+}
+
+.modal-mapa-footer {
+    flex-shrink: 0;
+    padding: 16px 24px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    background: #fafcff;
+    flex-wrap: wrap;
+}
+
+/* Botones del footer – usan clases existentes */
+.modal-mapa-footer .btn-secundario,
+.modal-mapa-footer .btn-primario {
+    margin: 0;
+    padding: 8px 20px;
+    font-size: 0.9rem;
+}
+
+/* Responsive para móviles */
+@media (max-width: 640px) {
+    .modal-mapa-contenido {
+        width: 95%;
+        max-height: 90vh;
+    }
+    #contenedor-mapa-reporte {
+        min-height: 250px;
+    }
+    .modal-mapa-footer {
+        justify-content: stretch;
+        flex-direction: column-reverse;
+        gap: 10px;
+    }
+    .modal-mapa-footer button {
+        width: 100%;
+        justify-content: center;
+    }
+    .grupo-coordenadas {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .grupo-coordenadas input {
+        width: 100%;
+    }
+    #btn-abrir-mapa {
+        justify-content: center;
+    }
 }

@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancelarEdicionUsuario = document.getElementById(
     "btn-cancelar-edicion-usuario",
   );
+
   let graficoTipos = null;
   let graficoMunicipios = null;
   let usuariosAdmin = []; // lista de usuarios para el panel admin
@@ -286,7 +287,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Secciones comunes para todos los logueados
     mostrarElemento(seccionInicio);
     mostrarElemento(seccionEducacion);
-    mostrarElemento(seccionReportar); // ✅ todos ven reportar
+    mostrarElemento(seccionReportar); // todos ven reportar
+    //nuevo mapa
+    setTimeout(() => {
+      inicializarMapaReporte();
+      // Si estamos editando un reporte, intentar cargar coordenadas previas
+      if (reporteEnEdicion && reporteEnEdicion.coordenadas) {
+        cargarCoordenadasEnMapaReporte(reporteEnEdicion.coordenadas);
+      }
+    }, 100); // pequeño retraso para que el DOM esté listo
     mostrarElemento(seccionMapa);
     mostrarElemento(seccionEstadisticas);
     // Ocultamos todos los paneles
@@ -849,6 +858,18 @@ document.addEventListener("DOMContentLoaded", () => {
     mapCampo("hectareas", reporte.hectareas_afectadas || "No especificado");
     mapCampo("ecosistema", reporte.ecosistema || "No especificado");
     mapCampo("descripcion", reporte.descripcion || "");
+    mapCampo("coordenadas", reporte.coordenadas || "No registradas");
+    const linkMapa = detalleAutoridad.querySelector(`[data-campo="link-mapa"]`);
+    if (linkMapa) {
+      if (reporte.coordenadas && reporte.coordenadas.trim() !== "") {
+        const coordLimpias = reporte.coordenadas.replace(/\s+/g, "");
+        // URL oficial de Google Maps por coordenadas:
+        linkMapa.href = `https://maps.google.com/?q=${coordLimpias}`;
+        linkMapa.style.display = "inline-flex";
+      } else {
+        linkMapa.style.display = "none";
+      }
+    }
     if (detalleAutoridadImg) {
       if (reporte.evidencia_foto) {
         detalleAutoridadImg.src = "../" + reporte.evidencia_foto;
@@ -972,6 +993,19 @@ document.addEventListener("DOMContentLoaded", () => {
     mapCampo("hectareas", reporte.hectareas_afectadas || "No especificado");
     mapCampo("ecosistema", reporte.ecosistema || "No especificado");
     mapCampo("descripcion", reporte.descripcion || "");
+    mapCampo("coordenadas", reporte.coordenadas || "No registradas");
+    const linkMapaCiudadano = detalleMiReporte.querySelector(
+      `[data-campo="link-mapa"]`,
+    );
+    if (linkMapaCiudadano) {
+      if (reporte.coordenadas && reporte.coordenadas.trim() !== "") {
+        const coordLimpias = reporte.coordenadas.replace(/\s+/g, "");
+        linkMapaCiudadano.href = `https://www.google.com/maps?q=${coordLimpias}`;
+        linkMapaCiudadano.style.display = "inline-flex";
+      } else {
+        linkMapaCiudadano.style.display = "none";
+      }
+    }
     if (detalleMiReporteImg) {
       if (reporte.evidencia_foto) {
         detalleMiReporteImg.src = "../" + reporte.evidencia_foto;
@@ -981,6 +1015,15 @@ document.addEventListener("DOMContentLoaded", () => {
         detalleMiReporteImg.style.display = "none";
       }
     }
+    // Suponiendo que tienes un objeto "reporte" que viene de tu BD con "reporte.coordenadas"
+    const urlMapa = `https://www.google.com/maps?q=${reporte.coordenadas}`;
+
+    // En el HTML que inyectas al panel, agrega esto:
+    const htmlUbicacion = `
+  <p><strong>Ubicación exacta:</strong> ${reporte.coordenadas}</p>
+  <a href="${urlMapa}" target="_blank" class="btn-secundario">🗺️ Ver en el mapa</a>
+`;
+    // Asegúrate de concatenar 'htmlUbicacion' dentro del contenedor de detalles de tu app.js
   }
   if (tbodyMisReportes) {
     tbodyMisReportes.addEventListener("click", async (e) => {
@@ -1067,7 +1110,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // 1️⃣2. PANEL ADMIN: crear autoridad
+  // 2. PANEL ADMIN: crear autoridad
   // =========================
   if (formCrearAutoridad) {
     formCrearAutoridad.addEventListener("submit", async (e) => {
@@ -1141,6 +1184,74 @@ document.addEventListener("DOMContentLoaded", () => {
       L.marker(latLng).addTo(capaMarkers).bindPopup(popupHtml);
     });
   }
+  //nuevo mapa
+  // 1. Referencias
+  const btnAbrirMapa = document.getElementById("btn-abrir-mapa");
+  const modalMapa = document.getElementById("modal-mapa");
+  const btnConfirmarUbicacion = document.getElementById(
+    "btn-confirmar-ubicacion",
+  );
+  const btnMiUbicacion = document.getElementById("btn-mi-ubicacion");
+  const inputCoordenadas = document.getElementById("coordenadas");
+
+  // 2. Inicializar el mapa (Asegúrate de no inicializarlo dos veces)
+  let mapaReporte = L.map("contenedor-mapa-reporte").setView([9.315, -75.4], 8); // Centrado en Sucre
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
+    mapaReporte,
+  );
+  let marcadorReporte = L.marker([9.315, -75.4], { draggable: true }).addTo(
+    mapaReporte,
+  );
+
+  // Actualiza el input cuando el usuario termina de arrastrar el pin
+  marcadorReporte.on("dragend", function (e) {
+    const pos = e.target.getLatLng();
+    inputCoordenadas.value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
+  });
+
+  // 3. Abrir el Modal (El secreto para que Leaflet funcione oculto)
+  btnAbrirMapa.addEventListener("click", () => {
+    modalMapa.classList.add("activo");
+    // CRÍTICO: Leaflet se "rompe" si carga dentro de un div oculto.
+    // Esta línea obliga al mapa a recalcular su tamaño al abrir el modal.
+    setTimeout(() => {
+      mapaReporte.invalidateSize();
+    }, 200);
+  });
+  // 4. Cerrar el modal
+  btnConfirmarUbicacion.addEventListener("click", () => {
+    modalMapa.classList.remove("activo");
+    // Si no movió el pin, guardamos la ubicación actual del pin
+    const pos = marcadorReporte.getLatLng();
+    inputCoordenadas.value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
+  });
+  // 5. ¡LA MAGIA DE TU UBICACIÓN ACTUAL!
+  btnMiUbicacion.addEventListener("click", () => {
+    if (navigator.geolocation) {
+      btnMiUbicacion.textContent = "⌛ Buscando...";
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          // Acercar el mapa (zoom 16) y mover el marcador ahí
+          mapaReporte.flyTo([lat, lng], 16);
+          marcadorReporte.setLatLng([lat, lng]);
+          inputCoordenadas.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+          btnMiUbicacion.textContent = "🎯 Acercar a mi ubicación actual";
+        },
+        (error) => {
+          alert(
+            "Debes permitir el acceso a tu ubicación en el navegador para usar esta función.",
+          );
+          btnMiUbicacion.textContent = "🎯 Acercar a mi ubicación actual";
+        },
+        { enableHighAccuracy: true }, // Intenta usar GPS si está en móvil
+      );
+    } else {
+      alert("Tu navegador no soporta la geolocalización.");
+    }
+  });
+
   //  FORMULARIO REPORTE (solo ciudadano)
   if (formReporte) {
     formReporte.addEventListener("submit", async (e) => {
@@ -1159,20 +1270,27 @@ document.addEventListener("DOMContentLoaded", () => {
       const ecosistema = document.getElementById("ecosistema").value;
       const descripcion = document.getElementById("descripcion").value.trim();
       const idAutoridad = document.getElementById("idAutoridadReporte").value;
+
+      // Validación de campos obligatorios (incluyendo coordenadas)
       if (
         !tipoActividad ||
         !municipio ||
         !vereda ||
+        !coordenadas || // ← nuevo campo obligatorio
         !fecha ||
         !descripcion ||
         !idAutoridad
       ) {
-        alert("Por favor completa los campos obligatorios del reporte.");
+        alert(
+          "Por favor completa todos los campos obligatorios, incluyendo la ubicación en el mapa.",
+        );
         return;
       }
+
       const formData = new FormData(formReporte);
       formData.append("id_usuario", sesionActual.id_usuario);
       formData.append("id_autoridad", idAutoridad);
+
       try {
         const resp = await fetch("../php/crear_reporte.php", {
           method: "POST",
@@ -1182,6 +1300,15 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(data.mensaje || "Respuesta del servidor.");
         if (data.ok) {
           formReporte.reset();
+          // Limpiar marcador y campo oculto
+          if (marcadorReporte) {
+            mapaReporte.removeLayer(marcadorReporte);
+            marcadorReporte = null;
+          }
+          document.getElementById("coordenadas").value = "";
+          if (mapaReporte) {
+            mapaReporte.setView([9.315, -75.4], 8);
+          }
           await cargarReportesDesdeServidor();
           await cargarMisReportes();
         }
