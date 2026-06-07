@@ -37,7 +37,11 @@ if (!in_array($tipo_usuario, $tiposValidos, true)) {
 }
 
 // Validar especialidad simple
-$especialidadesValidas = ['tala','quema','cambio_uso','extraccion','otra','general',''];
+$especialidadesValidas = [
+    'tala','quema','cambio_uso','extraccion','otra','general',
+    'contaminacion_agua','contaminacion_aire','residuos_solidos',
+    'trafico_fauna','mineria_ilegal',''
+];
 if (!in_array($especialidad, $especialidadesValidas, true)) {
     echo json_encode([
         'ok'      => false,
@@ -45,7 +49,64 @@ if (!in_array($especialidad, $especialidadesValidas, true)) {
     ]);
     exit;
 }
+// --- NUEVA VALIDACIÓN: evitar quitar especialidad/rol a autoridad con reportes sin sustituto ---
 
+// Solo aplica si el usuario ES actualmente una autoridad
+// (para eso necesitamos saber su tipo_usuario ACTUAL en la BD)
+$sqlActual = "SELECT tipo_usuario, especialidad FROM usuarios WHERE id_usuario = :id";
+$stmtActual = $pdo->prepare($sqlActual);
+$stmtActual->execute([':id' => $id_usuario]);
+$datosActuales = $stmtActual->fetch();
+
+if ($datosActuales && $datosActuales['tipo_usuario'] === 'autoridad') {
+    $especialidadActual = $datosActuales['especialidad'];
+    $nuevoTipo = $tipo_usuario;
+    $nuevaEspecialidad = ($tipo_usuario === 'autoridad') ? $especialidad : 'general';
+
+    // ¿Está cambiando el rol o la especialidad?
+    $cambiaRol = ($nuevoTipo !== 'autoridad');
+    $cambiaEspecialidad = ($nuevaEspecialidad !== $especialidadActual);
+
+    if ($cambiaRol || $cambiaEspecialidad) {
+        // Contar reportes NO cerrados asignados a esta autoridad
+        $sqlReportes = "SELECT COUNT(*) AS total
+                        FROM reportes_deforestacion
+                        WHERE id_autoridad = :idAutoridad
+                          AND estado_reporte != 'cerrado'";
+        $stmtRep = $pdo->prepare($sqlReportes);
+        $stmtRep->execute([':idAutoridad' => $id_usuario]);
+        $totalReportes = $stmtRep->fetchColumn();
+
+        if ($totalReportes > 0) {
+            $sqlReasignar = "UPDATE reportes_deforestacion 
+                 SET id_autoridad = :idSustituto 
+                 WHERE id_autoridad = :idAntiguo AND estado_reporte != 'cerrado'";
+            // Buscar otra autoridad activa con la misma especialidad actual (excluyendo al mismo usuario)
+            $sqlSustituto = "SELECT COUNT(*) AS total
+                             FROM usuarios
+                             WHERE tipo_usuario = 'autoridad'
+                               AND estado = 'activo'
+                               AND especialidad = :espActual
+                               AND id_usuario != :idAutoridad";
+            $stmtSust = $pdo->prepare($sqlSustituto);
+            $stmtSust->execute([
+                ':espActual'   => $especialidadActual,
+                ':idAutoridad' => $id_usuario
+            ]);
+            $totalSustitutos = $stmtSust->fetchColumn();
+
+            if ($totalSustitutos == 0) {
+                echo json_encode([
+                    'ok'      => false,
+                    'mensaje' => "No se puede cambiar el rol o la especialidad porque esta autoridad tiene $totalReportes reporte(s) activos y no existe otra autoridad con la especialidad '$especialidadActual' que pueda asumirlos. Primero asigne esos reportes a otra autoridad o ciérrelos."
+                ]);
+                exit;
+            }
+        }
+    }
+}
+
+// --- FIN DE LA NUEVA VALIDACIÓN ---
 try {
     // 1) Verificar que correo / teléfono no estén usados por otro usuario
     $sqlCheck = "SELECT COUNT(*) AS total

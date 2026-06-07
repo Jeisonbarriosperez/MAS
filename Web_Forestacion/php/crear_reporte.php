@@ -17,6 +17,15 @@ $hectareas         = $_POST['hectareas'] ?? null;
 $ecosistema        = $_POST['ecosistema'] ?? 'no_especificado';
 $descripcion       = trim($_POST['descripcion'] ?? '');
 
+// Validar que se haya subido una imagen
+if (empty($_FILES['evidencia']) || $_FILES['evidencia']['error'] !== UPLOAD_ERR_OK) {
+    echo json_encode([
+        'ok' => false,
+        'mensaje' => 'Es obligatorio adjuntar una imagen como evidencia.'
+    ]);
+    exit;
+}
+
 // 1) Validar campos obligatorios
 if (
     $id_usuario   <= 0 ||

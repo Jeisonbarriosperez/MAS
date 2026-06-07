@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 </head>
+
 <body>
   <!-- Encabezado principal -->
   <header>
@@ -44,17 +46,24 @@
       <p>
         Usa este formulario para registrar actividades relacionadas con el daño del medio ambiente
       </p>
-      <form id="form-reporte" class="formulario">
+      <form id="form-reporte" class="formulario" enctype="multipart/form-data">
         <!-- Tipo de actividad -->
         <div class="campo">
           <label for="tipoActividad">Tipo de actividad *</label>
           <select id="tipoActividad" name="tipoActividad" required>
             <option value="">Selecciona una opción</option>
+            <!-- Opciones originales -->
             <option value="tala">Tala de árboles</option>
-            <option value="quema">Quema</option>
+            <option value="quema">Quema (pastizales, bosques)</option>
             <option value="cambio_uso">Cambio de uso del suelo</option>
-            <option value="extraccion">Extracción ilegal (madera, carbón, etc.)</option>
-            <option value="otra">Otra actividad</option>
+            <option value="extraccion">Extracción ilegal (madera, carbón)</option>
+            <!-- Nuevas opciones ambientales -->
+            <option value="contaminacion_agua">Contaminación de cuerpos de agua (ríos, ciénagas)</option>
+            <option value="contaminacion_aire">Contaminación del aire (emisiones industriales, quema de basura)</option>
+            <option value="residuos_solidos">Manejo inadecuado de residuos sólidos (basuras, escombros)</option>
+            <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
+            <option value="mineria_ilegal">Minería ilegal (dragado, mercurio)</option>
+            <option value="otra">Otra actividad ambiental</option>
           </select>
         </div>
         <!-- Municipio -->
@@ -115,7 +124,7 @@
         <!-- Evidencia fotográfica -->
         <div class="campo campo-full">
           <label for="evidencia">Evidencia fotográfica</label>
-          <input type="file" id="evidencia" name="evidencia" accept="image/*" />
+          <input type="file" id="evidencia" name="evidencia" accept="image/*" required />
           <small>Puedes adjuntar fotos en formato JPG o PNG.</small>
         </div>
         <!-- Botón -->
@@ -399,12 +408,17 @@
           </button>
         </div>
         <div class="campo">
-          <label for="autEspecialidad">Especialidad de la autoridad *</label>
           <select id="autEspecialidad" name="especialidad" required>
             <option value="tala">Tala de árboles</option>
             <option value="quema">Quema</option>
             <option value="cambio_uso">Cambio de uso del suelo</option>
             <option value="extraccion">Extracción ilegal</option>
+            <!-- Nuevas especialidades -->
+            <option value="contaminacion_agua">Contaminación de cuerpos de agua</option>
+            <option value="contaminacion_aire">Contaminación del aire</option>
+            <option value="residuos_solidos">Manejo inadecuado de residuos sólidos</option>
+            <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
+            <option value="mineria_ilegal">Minería ilegal</option>
             <option value="otra">Otra / general</option>
           </select>
         </div>
@@ -478,6 +492,12 @@
               <option value="extraccion">Extracción ilegal</option>
               <option value="otra">Otra</option>
               <option value="general">General</option>
+              <!-- NUEVAS ESPECIALIDADES -->
+              <option value="contaminacion_agua">Contaminación de cuerpos de agua</option>
+              <option value="contaminacion_aire">Contaminación del aire</option>
+              <option value="residuos_solidos">Manejo inadecuado de residuos sólidos</option>
+              <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
+              <option value="mineria_ilegal">Minería ilegal</option>
             </select>
           </div>
           <div class="campo campo-full">
@@ -624,4 +644,5 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
+
 </html>

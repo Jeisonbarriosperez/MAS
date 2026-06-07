@@ -17,7 +17,11 @@ $creado_por = intval($_POST['creado_por'] ?? 0); // id del admin
 $especialidad = $_POST['especialidad'] ?? 'general';
 
 // Validar que venga algo coherente
-$especialidadesPermitidas = ['tala','quema','cambio_uso','extraccion','otra','general'];
+$especialidadesPermitidas = [
+    'tala','quema','cambio_uso','extraccion','otra','general',
+    'contaminacion_agua','contaminacion_aire','residuos_solidos',
+    'trafico_fauna','mineria_ilegal'
+];
 if (!in_array($especialidad, $especialidadesPermitidas, true)) {
     $especialidad = 'general';
 }
