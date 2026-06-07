@@ -1,33 +1,26 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MAS - Monitoreo y Control Ambiental</title>
-
   <!-- Desde /html apuntamos a /css -->
   <link rel="stylesheet" href="../css/style.css?v=2" />
-
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-
 </head>
-
 <body>
-
   <!-- Encabezado principal -->
   <header>
     <div>
       <h1>Monitoreo Ambiental Sucre (MAS)</h1>
       <p>Sistema web para el monitoreo y control ambiental en el departamento de Sucre.</p>
     </div>
-
     <!-- Menú de navegación principal -->
     <nav>
       <ul>
         <li><a href="#inicio">Inicio</a></li>
-        <li><a href="#reportar">Reportar Daño Ambiental</a></li>
+        <li><a href="#reportar">Reporte ambiental</a></li>
         <li><a href="#mapa">Mapa de zonas afectadas</a></li>
         <li><a href="#educacion">Educación ambiental</a></li>
         <li><a href="#estadisticas">Estadísticas</a></li>
@@ -35,77 +28,65 @@
       </ul>
     </nav>
   </header>
-
   <main>
     <!-- Sección Inicio / Presentación del sistema -->
     <section id="inicio">
       <h2>Bienvenido a MAS</h2>
       <p>
         MAS es una plataforma web que permite a la ciudadanía y a las autoridades ambientales
-        registrar, visualizar y hacer seguimiento a actividades relacionadas con el medio ambiente
-        en el departamento de Sucre.
+        registrar, visualizar y hacer seguimiento a actividades relacionadas con el medio ambiente en el departamento de
+        Sucre.
       </p>
     </section>
-
     <!-- Sección para crear reportes de deforestación -->
     <section id="reportar">
-      <h2>Crear Reporte Ambiental</h2>
-      <p>Si eres testigo de una actividad que afecte el ecosistema en el departamento de Sucre, regístrala aquí.</p>
-
+      <h2>Reportar actividad ambiental</h2>
+      <p>
+        Usa este formulario para registrar actividades relacionadas con el daño del medio ambiente
+      </p>
       <form id="form-reporte" class="formulario">
         <!-- Tipo de actividad -->
         <div class="campo">
-          <label for="tipoActividad">Tipo de Daño Ambiental:</label>
-          <select id="tipoActividad" name="tipoActividad">
-            <option value="">-- Seleccione una categoría --</option>
-            <option value="tala">Tala Indebida de Árboles / Deforestación</option>
-            <option value="quema">Quemas Provocadas o Incendios</option>
-            <option value="cambio_uso">Uso Inadecuado del Suelo</option>
-            <option value="extraccion">Minería o Extracción Ilegal de Recursos</option>
-            <option value="contaminacion_agua">Contaminación de Ríos, Arroyos o Playas</option>
-            <option value="basuras">Arrojo Clandestino de Basuras y Residuos</option>
-            <option value="fauna">Caza, Tráfico o Maltrato de Fauna Silvestre</option>
-            <option value="otra">Otro Daño o Impacto Ambiental</option>
+          <label for="tipoActividad">Tipo de actividad *</label>
+          <select id="tipoActividad" name="tipoActividad" required>
+            <option value="">Selecciona una opción</option>
+            <option value="tala">Tala de árboles</option>
+            <option value="quema">Quema</option>
+            <option value="cambio_uso">Cambio de uso del suelo</option>
+            <option value="extraccion">Extracción ilegal (madera, carbón, etc.)</option>
+            <option value="otra">Otra actividad</option>
           </select>
         </div>
-
         <!-- Municipio -->
         <div class="campo">
           <label for="municipio">Municipio *</label>
           <input type="text" id="municipio" name="municipio" placeholder="Ej: Sincelejo" required />
         </div>
-
         <!-- Vereda / zona -->
         <div class="campo">
           <label for="vereda">Vereda o zona *</label>
           <input type="text" id="vereda" name="vereda" placeholder="Ej: Vereda La Esperanza" required />
         </div>
-
         <!-- Coordenadas aproximadas -->
         <div class="campo">
           <label for="coordenadas">Coordenadas </label>
           <input type="text" id="coordenadas" name="coordenadas" placeholder="Ej: 9.2431, -75.1234" />
         </div>
-
-
         <!-- Fecha de observación -->
         <div class="campo">
           <label for="fecha">Fecha de la observación *</label>
           <input type="date" id="fecha" name="fecha" required />
         </div>
-
         <!-- Hora aproximada -->
         <div class="campo">
           <label for="hora">Hora aproximada</label>
           <input type="time" id="hora" name="hora" />
         </div>
-
         <!-- Hectáreas afectadas -->
         <div class="campo">
           <label for="hectareas">Hectáreas afectadas (aprox.)</label>
           <input type="number" id="hectareas" name="hectareas" min="0" step="0.1" placeholder="Ej: 2.5" />
         </div>
-
         <!-- Tipo de ecosistema -->
         <div class="campo">
           <label for="ecosistema">Tipo de ecosistema</label>
@@ -117,16 +98,13 @@
             <option value="otro">Otro</option>
           </select>
         </div>
-
         <div class="campo">
           <label for="idAutoridadReporte">Autoridad ambiental responsable *</label>
           <select id="idAutoridadReporte" name="id_autoridad" required>
             <option value="">Selecciona la autoridad a la que enviarás el reporte</option>
           </select>
-          <small>Autoridades especializadas en el tipo de actividad (tala, quema, etc.).</small>
+          <small>Autoridades especializadas en el tipo de actividad.</small>
         </div>
-
-
         <!-- Descripción -->
         <div class="campo campo-full">
           <label for="descripcion">Descripción del caso *</label>
@@ -134,14 +112,12 @@
             placeholder="Describe lo que observaste, responsables (si los conoces), vías de acceso, etc."
             required></textarea>
         </div>
-
         <!-- Evidencia fotográfica -->
         <div class="campo campo-full">
-          <label for="evidencia">Evidencia fotográfica (opcional)</label>
+          <label for="evidencia">Evidencia fotográfica</label>
           <input type="file" id="evidencia" name="evidencia" accept="image/*" />
           <small>Puedes adjuntar fotos en formato JPG o PNG.</small>
         </div>
-
         <!-- Botón -->
         <div class="campo campo-full">
           <button type="submit" class="btn-primario">
@@ -150,43 +126,38 @@
         </div>
       </form>
     </section>
-
     <!-- Sección con mapa -->
     <section id="mapa">
       <h2>Mapa de zonas afectadas</h2>
       <p>
-        En este mapa se representan los reportes del medio ambiente registrados en el sistema MAS.
+        En este mapa se representan los reportes registrados en el sistema MAS.
         Cada marcador corresponde a una zona afectada.
       </p>
-
       <!-- Contenedor del mapa -->
       <div id="mapa-zonas"></div>
-
       <p class="nota-mapa">
-        Nota: las ubicaciones son aproximadas y se basan en las coordenadas suministradas en los reportes.
+        Las ubicaciones son aproximadas y se basan en las coordenadas suministradas en los reportes.
       </p>
     </section>
-
-
     <!-- Sección de educación ambiental -->
     <section id="educacion">
       <h2>Educación Ambiental</h2>
       <p>
-        Material básico para comprender el impacto de la degradación ambiental y las acciones que pueden tomar la ciudadanía y las autoridades en la protección de los ecosistemas del departamento de Sucre.
+        Material básico para comprender el impacto de la degradación ambiental y las acciones que pueden tomar la
+        ciudadanía y las autoridades en la protección de los ecosistemas del departamento de Sucre.
       </p>
-
       <div class="edu-tabs">
         <button class="edu-tab activa" data-target="ciudadania">Para ciudadanía</button>
         <button class="edu-tab" data-target="autoridades">Para autoridades</button>
       </div>
-
       <div class="edu-panel" id="edu-ciudadania">
         <div class="edu-grid">
           <article class="edu-card">
             <span class="edu-tag">Buenas prácticas</span>
             <h3>¿Cómo proteger nuestros ecosistemas?</h3>
             <p>
-              Evitar arrojar basuras a los ríos, no realizar quemas a cielo abierto y respetar la fauna silvestre son acciones clave para disminuir el daño ambiental en nuestra región.
+              Evitar arrojar basuras a los ríos, no realizar quemas a cielo abierto y respetar la fauna silvestre son
+              acciones clave para disminuir el daño ambiental en nuestra región.
             </p>
             <ul>
               <li>Disponer correctamente los residuos sólidos y reciclables.</li>
@@ -194,12 +165,12 @@
               <li>Denunciar cualquier actividad extractiva ilegal.</li>
             </ul>
           </article>
-
           <article class="edu-card">
             <span class="edu-tag">Denuncia</span>
             <h3>¿Cuándo reportar en MAS?</h3>
             <p>
-              Reporta en MAS cuando observes contaminación de cuerpos de agua, tala indebida, arrojo clandestino de basuras, minería ilegal o tráfico de fauna silvestre.
+              Reporta en MAS cuando observes contaminación de cuerpos de agua, tala indebida, arrojo clandestino de
+              basuras, minería ilegal o tráfico de fauna silvestre.
             </p>
             <ul>
               <li>Toma fotos o videos si es seguro hacerlo.</li>
@@ -207,12 +178,12 @@
               <li>Evita enfrentamientos directos con los infractores.</li>
             </ul>
           </article>
-
           <article class="edu-card">
             <span class="edu-tag">Restauración</span>
             <h3>Importancia de la conservación</h3>
             <p>
-              Proteger y restaurar nuestro entorno ayuda a recuperar suelos, salvar fuentes de agua y garantizar la supervivencia de nuestras especies nativas. ¡Únete a iniciativas locales!
+              Proteger y restaurar nuestro entorno ayuda a recuperar suelos, salvar fuentes de agua y garantizar la
+              supervivencia de nuestras especies nativas. ¡Únete a iniciativas locales!
             </p>
             <ul>
               <li>Participar en jornadas comunitarias de limpieza y siembra.</li>
@@ -222,14 +193,14 @@
           </article>
         </div>
       </div>
-
       <div class="edu-panel oculto" id="edu-autoridades">
         <div class="edu-grid">
           <article class="edu-card">
             <span class="edu-tag">Monitoreo</span>
             <h3>Uso de MAS para la gestión institucional</h3>
             <p>
-              La plataforma MAS apoya la priorización de operativos de control, la atención temprana de desastres ambientales y el seguimiento continuo a zonas críticas.
+              La plataforma MAS apoya la priorización de operativos de control, la atención temprana de desastres
+              ambientales y el seguimiento continuo a zonas críticas.
             </p>
             <ul>
               <li>Identificar zonas con mayor concentración de reportes ciudadanos.</li>
@@ -237,12 +208,12 @@
               <li>Generar estadísticas para la toma de decisiones oportunas.</li>
             </ul>
           </article>
-
           <article class="edu-card">
             <span class="edu-tag">Normatividad</span>
             <h3>Normatividad ambiental clave</h3>
             <p>
-              Se debe articular el uso de MAS con las leyes de protección ambiental vigentes, las corporaciones autónomas (CAR) y los acuerdos de conservación.
+              Se debe articular el uso de MAS con las leyes de protección ambiental vigentes, las corporaciones
+              autónomas (CAR) y los acuerdos de conservación.
             </p>
             <ul>
               <li>Control de licencias ambientales y permisos de aprovechamiento.</li>
@@ -250,12 +221,12 @@
               <li>Aplicación de protocolos para sanción de delitos ambientales.</li>
             </ul>
           </article>
-
           <article class="edu-card">
             <span class="edu-tag">Participación</span>
             <h3>Trabajo con comunidades</h3>
             <p>
-              Las comunidades locales son aliadas fundamentales en la detección temprana de impactos ambientales y en la promoción de prácticas sostenibles.
+              Las comunidades locales son aliadas fundamentales en la detección temprana de impactos ambientales y en la
+              promoción de prácticas sostenibles.
             </p>
             <ul>
               <li>Capacitaciones sobre el uso del sistema de reportes MAS.</li>
@@ -266,16 +237,13 @@
         </div>
       </div>
     </section>
-
-
     <!-- Sección de estadísticas para la autoridad -->
     <section id="estadisticas">
       <h2>Estadísticas y seguimiento</h2>
       <p>
-        Indicadores básicos sobre los reportes de deforestación
-        registrados en el sistema MAS.
+        En esta sección se muestran indicadores básicos sobre los reportes registrados en el sistema
+        MAS.
       </p>
-
       <!-- Resumen en tarjetas -->
       <div class="stats-resumen">
         <div class="stat-card">
@@ -283,20 +251,17 @@
           <p id="stat-total-reportes" class="stat-valor">0</p>
           <span class="stat-etiqueta">Registros en el sistema</span>
         </div>
-
         <div class="stat-card">
           <h3>Hectáreas afectadas (aprox.)</h3>
           <p id="stat-hectareas" class="stat-valor">0</p>
           <span class="stat-etiqueta">Suma de las hectáreas reportadas</span>
         </div>
-
         <div class="stat-card">
           <h3>Municipios involucrados</h3>
           <p id="stat-municipios" class="stat-valor">0</p>
           <span class="stat-etiqueta">Municipios con al menos un reporte</span>
         </div>
       </div>
-
       <!-- Detalle por tipo y por municipio -->
       <div class="stats-detalle">
         <div class="stat-bloque">
@@ -305,7 +270,6 @@
             <!-- JS llena estos datos -->
           </ul>
         </div>
-
         <div class="stat-bloque">
           <h4>Reportes por municipio</h4>
           <ul id="lista-municipios" class="stat-lista">
@@ -314,22 +278,18 @@
         </div>
       </div>
     </section>
-
-
     <!-- Sección de autenticación (login y registro) -->
     <section id="ingresar">
       <h2>Ingresar al sistema</h2>
       <p>
-        Usa tu correo y contraseña para ingresar al sistema MAS.
+        Usa tu correo y contraseña para ingresar al sistema MAS
       </p>
-
       <div class="auth-contenedor">
         <!-- Pestañas -->
         <div class="auth-tabs">
           <button class="auth-tab activo" data-target="login">Iniciar sesión</button>
           <button class="auth-tab" data-target="registro">Registrarme</button>
         </div>
-
         <!-- Panel LOGIN -->
         <div class="auth-panel" id="panel-login">
           <form id="form-login" class="formulario auth-form">
@@ -337,19 +297,16 @@
               <label for="loginCorreo">Correo electrónico *</label>
               <input type="email" id="loginCorreo" name="loginCorreo" placeholder="ejemplo@correo.com" required />
             </div>
-
             <div class="campo campo-full">
               <label for="loginClave">Contraseña *</label>
               <input type="password" id="loginClave" name="loginClave" required />
             </div>
-
             <div class="campo">
               <label>
                 <input type="checkbox" id="loginRecordar" />
                 Mantener sesión iniciada
               </label>
             </div>
-
             <div class="campo campo-full">
               <button type="submit" class="btn-primario">
                 Iniciar sesión
@@ -357,7 +314,6 @@
             </div>
           </form>
         </div>
-
         <!-- Panel REGISTRO (SOLO CIUDADANOS) -->
         <div class="auth-panel oculto" id="panel-registro">
           <form id="form-registro" class="formulario auth-form">
@@ -365,43 +321,35 @@
               <label for="regNombre">Nombre *</label>
               <input type="text" id="regNombre" name="regNombre" required />
             </div>
-
             <div class="campo">
               <label for="regApellido">Apellido *</label>
               <input type="text" id="regApellido" name="regApellido" required />
             </div>
-
             <div class="campo">
               <label for="regCorreo">Correo electrónico *</label>
               <input type="email" id="regCorreo" name="regCorreo" placeholder="ejemplo@correo.com" required />
             </div>
-
             <div class="campo">
               <label for="regTelefono">Teléfono</label>
               <input type="tel" id="regTelefono" name="regTelefono" placeholder="Ej: 3001234567" />
             </div>
-
             <div class="campo">
               <label for="regMunicipio">Municipio *</label>
               <input type="text" id="regMunicipio" name="regMunicipio" placeholder="Ej: Sincelejo" required />
             </div>
-
             <div class="campo">
               <label for="regVereda">Vereda / Barrio</label>
               <input type="text" id="regVereda" name="regVereda" placeholder="Ej: Vereda La Esperanza" />
             </div>
-
             <!-- AQUÍ AÑADIMOS LAS CONTRASEÑAS -->
             <div class="campo">
               <label for="regClave">Contraseña *</label>
               <input type="password" id="regClave" name="regClave" required />
             </div>
-
             <div class="campo">
               <label for="regClave2">Confirmar contraseña *</label>
               <input type="password" id="regClave2" name="regClave2" required />
             </div>
-
             <div class="campo campo-full">
               <button type="submit" class="btn-primario">
                 Crear cuenta ciudadana
@@ -410,51 +358,41 @@
           </form>
         </div>
     </section>
-
-
     <section id="panel-admin" class="oculto">
       <h2>Panel de administrador</h2>
       <p>
-        Registro de nuevas autoridades ambientales que gestionarán
+        Registro de autoridades ambientales que gestionarán
         los reportes enviados por la ciudadanía.
       </p>
-
       <form id="form-crear-autoridad" class="formulario">
         <div class="campo">
           <label for="autNombre">Nombre *</label>
           <input type="text" id="autNombre" name="nombre" required />
         </div>
-
         <div class="campo">
           <label for="autApellido">Apellido *</label>
           <input type="text" id="autApellido" name="apellido" required />
         </div>
-
         <div class="campo">
           <label for="autCorreo">Correo electrónico *</label>
           <input type="email" id="autCorreo" name="correo" placeholder="autoridad@mas.com" required />
         </div>
-
         <div class="campo">
           <label for="autTelefono">Teléfono</label>
           <input type="tel" id="autTelefono" name="telefono" placeholder="Ej: 3001234567" />
         </div>
-
         <div class="campo">
           <label for="autMunicipio">Municipio *</label>
           <input type="text" id="autMunicipio" name="municipio" placeholder="Ej: Sincelejo" required />
         </div>
-
         <div class="campo">
           <label for="autVereda">Vereda / Barrio</label>
           <input type="text" id="autVereda" name="vereda" placeholder="Ej: Oficina central" />
         </div>
-
         <div class="campo">
           <label for="autClave">Contraseña inicial *</label>
           <input type="password" id="autClave" name="clave" required />
         </div>
-
         <div class="campo campo-full">
           <button type="submit" class="btn-primario">
             Crear autoridad
@@ -470,14 +408,11 @@
             <option value="otra">Otra / general</option>
           </select>
         </div>
-
       </form>
       <!-- NUEVA SECCIÓN: Gestión de usuarios -->
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
-
       <h3>Gestión de usuarios</h3>
-      <p>ciudadanos, autoridades y administradores</p>
-
+      <p>ciudadanos, autoridades y administradores.</p>
       <div class="tabla-reportes-autoridad">
         <table>
           <thead>
@@ -496,44 +431,35 @@
           </tbody>
         </table>
       </div>
-
       <!-- Detalle / edición de usuario -->
       <div id="detalle-usuario-admin" class="detalle-reporte oculto">
         <h3>Editar usuario</h3>
-
         <form id="form-editar-usuario-admin" class="formulario">
           <input type="hidden" id="adminUserId" name="id_usuario" />
-
           <div class="campo">
             <label for="adminUserNombre">Nombre</label>
             <input type="text" id="adminUserNombre" name="nombre" required />
           </div>
-
           <div class="campo">
             <label for="adminUserApellido">Apellido</label>
             <input type="text" id="adminUserApellido" name="apellido" required />
           </div>
-
           <div class="campo">
             <label for="adminUserCorreo">Correo</label>
             <input type="email" id="adminUserCorreo" name="correo" required />
           </div>
-
           <div class="campo">
             <label for="adminUserTelefono">Teléfono</label>
             <input type="tel" id="adminUserTelefono" name="telefono" />
           </div>
-
           <div class="campo">
             <label for="adminUserMunicipio">Municipio</label>
             <input type="text" id="adminUserMunicipio" name="municipio" />
           </div>
-
           <div class="campo">
             <label for="adminUserVereda">Vereda / barrio</label>
             <input type="text" id="adminUserVereda" name="vereda" />
           </div>
-
           <div class="campo">
             <label for="adminUserRol">Rol</label>
             <select id="adminUserRol" name="tipo_usuario" required>
@@ -542,7 +468,6 @@
               <option value="admin">Administrador</option>
             </select>
           </div>
-
           <div class="campo">
             <label for="adminUserEspecialidad">Especialidad (si es autoridad)</label>
             <select id="adminUserEspecialidad" name="especialidad">
@@ -555,13 +480,11 @@
               <option value="general">General</option>
             </select>
           </div>
-
           <div class="campo campo-full">
             <label for="adminUserNuevaClave">Nueva contraseña (opcional)</label>
             <input type="password" id="adminUserNuevaClave" name="nueva_clave"
               placeholder="Déjalo vacío para no cambiar la clave" />
           </div>
-
           <div class="campo campo-full" style="display:flex; gap:10px; margin-top:8px;">
             <button type="submit" class="btn-primario">Guardar cambios</button>
             <button type="button" id="btn-cancelar-edicion-usuario" class="btn-secundario">
@@ -571,14 +494,12 @@
         </form>
       </div>
     </section>
-
     <!-- Panel privado de usuario (ciudadano) -->
     <section id="panel-usuario" class="oculto">
       <h2>Mis reportes</h2>
       <p>
-        Aquí puedes consultar y gestionar los reportes que has registrado en MAS.
+        Aconsultar y gestionar los reportes que has registrado en MAS.
       </p>
-
       <div class="tabla-mis-reportes">
         <table>
           <thead>
@@ -596,7 +517,6 @@
           </tbody>
         </table>
       </div>
-
       <div id="detalle-mi-reporte" class="detalle-reporte oculto">
         <h3>Detalle del reporte</h3>
         <p><strong>Municipio:</strong> <span data-campo="municipio"></span></p>
@@ -607,22 +527,18 @@
         <p><strong>Ecosistema:</strong> <span data-campo="ecosistema"></span></p>
         <p><strong>Descripción:</strong></p>
         <p><span data-campo="descripcion"></span></p>
-
         <div class="detalle-imagen">
           <p><strong>Evidencia fotográfica:</strong></p>
           <img id="detalle-mi-reporte-img" src="" alt="Evidencia del reporte" />
         </div>
       </div>
     </section>
-
     <!-- Panel privado de autoridad -->
     <section id="panel-autoridad" class="oculto">
       <h2>Panel de autoridad ambiental</h2>
       <p>
-        Reportes registrados en la plataforma MAS
-        para apoyar el monitoreo y la toma de decisiones.
+        reportes registrados en la plataforma MAS para apoyar el monitoreo y la toma de decisiones.
       </p>
-
       <div class="tabla-reportes-autoridad">
         <table>
           <thead>
@@ -642,7 +558,6 @@
           </tbody>
         </table>
       </div>
-
       <div id="detalle-reporte-autoridad" class="detalle-reporte oculto">
         <h3>Detalle del reporte seleccionado</h3>
         <p>
@@ -679,12 +594,10 @@
         </p>
         <p><strong>Descripción:</strong></p>
         <p><span data-campo="descripcion"></span></p>
-
         <div class="detalle-imagen">
           <p><strong>Evidencia fotográfica:</strong></p>
           <img id="detalle-reporte-autoridad-img" src="" alt="Evidencia del reporte" />
         </div>
-
         <div class="detalle-estado">
           <label for="estado-reporte-select">Estado del reporte:</label>
           <select id="estado-reporte-select">
@@ -693,10 +606,8 @@
             <option value="en_proceso">En proceso</option>
             <option value="cerrado">Cerrado</option>
           </select>
-
           <label for="observacion-cierre">Observación / nota de cierre (opcional)</label>
           <textarea id="observacion-cierre" rows="3"></textarea>
-
           <button type="button" id="btn-guardar-estado" class="btn-primario">
             Guardar cambios
           </button>
@@ -704,18 +615,13 @@
       </div>
     </section>
   </main>
-
-
   </main>
-
   <footer>
-    <p>Proyecto MAS - Monitoreo y Control del medio ambiente · CECAR · 2026</p>
+    <p>Proyecto MAS - Monitoreo y Control ambiental · CECAR · 2026</p>
   </footer>
-
   <!-- Desde /html apuntamos a /js -->
   <script src="../js/app.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
-
 </html>
