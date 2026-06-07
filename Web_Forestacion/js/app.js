@@ -47,6 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancelarEdicionUsuario = document.getElementById(
     "btn-cancelar-edicion-usuario",
   );
+  let graficoTipos = null;
+  let graficoMunicipios = null;
   let usuariosAdmin = []; // lista de usuarios para el panel admin
   // =========================
   // 1. Estado global
@@ -103,6 +105,151 @@ document.addEventListener("DOMContentLoaded", () => {
           eduPanelCiudadania.classList.add("oculto");
         }
       });
+    });
+  }
+  function dibujarGraficoTipos() {
+    const ctx = document.getElementById("grafico-tipos");
+    if (!ctx) return;
+
+    const conteo = {};
+    reportes.forEach((r) => {
+      const tipo = r.tipo_actividad || "otra";
+      conteo[tipo] = (conteo[tipo] || 0) + 1;
+    });
+
+    const etiquetas = {
+      tala: "Tala de árboles",
+      quema: "Quema",
+      cambio_uso: "Cambio de uso del suelo",
+      extraccion: "Extracción ilegal",
+      otra: "Otra actividad",
+      contaminacion_agua: "Contaminación de agua",
+      contaminacion_aire: "Contaminación del aire",
+      residuos_solidos: "Residuos sólidos",
+      trafico_fauna: "Tráfico de fauna",
+      mineria_ilegal: "Minería ilegal",
+    };
+
+    const labels = Object.keys(conteo).map((t) => etiquetas[t] || t);
+    const data = Object.values(conteo);
+
+    if (graficoTipos) graficoTipos.destroy();
+
+    graficoTipos = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Número de reportes",
+            data: data,
+            backgroundColor: [
+              "#27ae60",
+              "#e67e22",
+              "#2980b9",
+              "#8e44ad",
+              "#95a5a6",
+              "#16a085",
+              "#d35400",
+              "#2c3e50",
+              "#c0392b",
+              "#f1c40f",
+            ],
+            borderWidth: 0,
+            borderRadius: 6,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          duration: 1000,
+          easing: "easeOutCubic",
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "#2c3e50",
+            titleColor: "#ecf0f1",
+            bodyColor: "#ecf0f1",
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: { stepSize: 1, precision: 0 },
+          },
+        },
+      },
+    });
+  }
+
+  function dibujarGraficoMunicipios() {
+    const ctx = document.getElementById("grafico-municipios");
+    if (!ctx) return;
+
+    const conteo = {};
+    reportes.forEach((r) => {
+      if (r.municipio) {
+        const muni = r.municipio.trim();
+        conteo[muni] = (conteo[muni] || 0) + 1;
+      }
+    });
+
+    const labels = Object.keys(conteo);
+    const data = Object.values(conteo);
+
+    if (graficoMunicipios) graficoMunicipios.destroy();
+
+    graficoMunicipios = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            data: data,
+            backgroundColor: [
+              "#3498db",
+              "#e74c3c",
+              "#2ecc71",
+              "#f1c40f",
+              "#9b59b6",
+              "#1abc9c",
+              "#e67e22",
+              "#34495e",
+              "#7f8c8d",
+              "#d35400",
+            ],
+            borderWidth: 2,
+            borderColor: "#ffffff",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: {
+          animateRotate: true,
+          duration: 800,
+          easing: "easeOutQuart",
+        },
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              boxWidth: 12,
+              padding: 12,
+              font: { size: 11 },
+            },
+          },
+          tooltip: {
+            backgroundColor: "#2c3e50",
+            titleColor: "#ecf0f1",
+            bodyColor: "#ecf0f1",
+          },
+        },
+      },
     });
   }
   // 4. Control de VISIBILIDAD por ROL
@@ -627,6 +774,8 @@ document.addEventListener("DOMContentLoaded", () => {
       li.innerHTML = `<span class="stat-label">${muni}</span><span class="stat-badge">${conteoPorMunicipio[muni]}</span>`;
       listaMunicipios.appendChild(li);
     });
+    dibujarGraficoTipos();
+    dibujarGraficoMunicipios();
   }
   // =========================
   // 🔟 TABLA PANEL AUTORIDAD

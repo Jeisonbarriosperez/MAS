@@ -502,7 +502,90 @@ section p {
   align-items: flex-end;
   justify-content: space-between;
 }
+/* Contenedor flexible para los gráficos */
+.stats-graficos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  max-width: 900px;
+  margin: 2rem auto 0 auto;
+}
 
+/* Tarjeta individual de cada gráfico */
+.grafico-card {
+  flex: 1 1 280px;           /* ancho mínimo 280px, se estira */
+  max-width: 400px;
+  background: #ffffff;
+  padding: 1rem;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.grafico-card h4 {
+  text-align: center;
+  margin: 0 0 0.8rem 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.grafico-card canvas {
+  width: 100% !important;
+  height: auto !important;
+  max-height: 240px;         /* limita la altura para mantenerlo compacto */
+}
+/*...............*/
+/* Listas convertidas en tarjetas */
+.stat-lista {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.stat-lista li {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 0.7rem 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1 1 180px;
+  border-left: 4px solid #3498db;
+  transition: all 0.2s ease;
+}
+
+.stat-lista li:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stat-badge {
+  background: #ecf0f1;
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 20px;
+  min-width: 2.5rem;
+  text-align: center;
+}
 /* ===== RESPONSIVE + MICROINTERACCIONES ===== */
 @media (max-width: 780px) {
   header {
