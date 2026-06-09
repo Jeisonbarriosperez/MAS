@@ -5,7 +5,7 @@ header('Content-Type: application/json');
 require_once 'conexion.php';
 $id_reporte = intval($_POST['id_reporte'] ?? 0);
 $id_usuario = intval($_POST['id_usuario'] ?? 0);
-$tipo_actividad    = $_POST['tipoActividad'] ?? '';
+$id_categoria      = intval($_POST['tipoActividad'] ?? 0);
 $municipio         = trim($_POST['municipio'] ?? '');
 $vereda            = trim($_POST['vereda'] ?? '');
 $coordenadas       = trim($_POST['coordenadas'] ?? '');
@@ -18,7 +18,7 @@ $descripcion       = trim($_POST['descripcion'] ?? '');
 if (
     $id_reporte <= 0 ||
     $id_usuario <= 0 ||
-    $tipo_actividad === '' ||
+    $id_categoria <= 0 ||
     $municipio === '' ||
     $vereda === '' ||
     $fecha_observacion === '' ||
@@ -79,7 +79,7 @@ try {
     }
     // 3) Actualizar registro
     $sqlUpd = "UPDATE reportes_deforestacion
-               SET tipo_actividad      = :tipo_actividad,
+               SET id_categoria        = :id_categoria
                    municipio           = :municipio,
                    vereda_zona         = :vereda_zona,
                    coordenadas         = :coordenadas,
@@ -94,7 +94,7 @@ try {
                  AND id_usuario = :id_usuario";
     $stmtUpd = $pdo->prepare($sqlUpd);
     $stmtUpd->execute([
-        ':tipo_actividad'     => $tipo_actividad,
+        ':id_categoria'       => $id_categoria,
         ':municipio'          => $municipio,
         ':vereda_zona'        => $vereda,
         ':coordenadas'        => $coordenadas !== '' ? $coordenadas : null,

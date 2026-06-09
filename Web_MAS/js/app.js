@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const formRegistro = document.getElementById("form-registro");
   const formReporte = document.getElementById("form-reporte");
   const formCrearAutoridad = document.getElementById("form-crear-autoridad");
+  const formCrearCategoria = document.getElementById("form-crear-categoria");
   const authTabs = document.querySelectorAll(".auth-tab");
   const panelLogin = document.getElementById("panel-login");
   const panelRegistro = document.getElementById("panel-registro");
@@ -61,6 +62,59 @@ document.addEventListener("DOMContentLoaded", () => {
   let reporteEnEdicion = null;
   let btnSubmitReporte = null;
   let textoOriginalBtnReporte = "";
+
+  if (formCrearCategoria) {
+    formCrearCategoria.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombreCat = document.getElementById("nueva-categoria-nombre").value;
+      const formData = new FormData();
+      formData.append("nombre_categoria", nombreCat);
+
+      try {
+        const resp = await fetch("../php/crear_categoria.php", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await resp.json();
+        alert(data.mensaje);
+        if (data.ok) {
+          formCrearCategoria.reset();
+          cargarCategorias(); // Recargar en vivo
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Error de conexión al crear categoría.");
+      }
+    });
+  }
+  // --- Eliminar Categoría
+  window.eliminarCategoria = async function (id, nombre) {
+    if (
+      !confirm(
+        `¿Estás seguro de que deseas eliminar la categoría "${nombre}"? \n\nNota: No se podrá borrar si hay reportes o autoridades usando esta categoría.`,
+      )
+    ) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("id_categoria", id);
+
+    try {
+      const resp = await fetch("../php/eliminar_categoria.php", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await resp.json();
+      alert(data.mensaje);
+      if (data.ok) {
+        cargarCategorias(); // Recargar en vivo
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Error de conexión al intentar eliminar.");
+    }
+  };
   if (formReporte) {
     btnSubmitReporte = formReporte.querySelector('button[type="submit"]');
     if (btnSubmitReporte) {
@@ -100,6 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
+  }
+  // === FUNCIÓN PUENTE: Evita que el sistema falle con el nuevo diseño dinámico ===
+  function etiquetaTipoActividad(valor) {
+    return valor || "No especificado";
   }
   function dibujarGraficoTipos() {
     const ctx = document.getElementById("grafico-tipos");
@@ -324,21 +382,6 @@ document.addEventListener("DOMContentLoaded", () => {
       mineria_ilegal: "Minería ilegal",
     };
     return map[especialidad] || especialidad;
-  }
-  function etiquetaTipoActividad(tipo) {
-    const mapa = {
-      tala: "Tala de árboles",
-      quema: "Quema",
-      cambio_uso: "Cambio de uso del suelo",
-      extraccion: "Extracción ilegal",
-      otra: "Otra actividad",
-      contaminacion_agua: "Contaminación de agua",
-      contaminacion_aire: "Contaminación del aire",
-      residuos_solidos: "Residuos sólidos",
-      trafico_fauna: "Tráfico de fauna",
-      mineria_ilegal: "Minería ilegal",
-    };
-    return mapa[tipo] || tipo.replace(/_/g, " ").toUpperCase();
   }
   function limpiarSelectAutoridad() {
     if (!selectAutoridadReporte) return;
@@ -809,7 +852,7 @@ document.addEventListener("DOMContentLoaded", () => {
     mapCampo("correo", reporte.ciudadano_correo || "");
     mapCampo("municipio", reporte.municipio || "");
     mapCampo("vereda", reporte.vereda_zona || "");
-    mapCampo("tipo", etiquetaTipoActividad(reporte.tipo_actividad) || "");
+    mapCampo("tipo", reporte.tipo_actividad || "Sin categoría");
     mapCampo(
       "fecha-hora",
       reporte.fecha_observacion +
@@ -942,7 +985,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     mapCampo("municipio", reporte.municipio || "");
     mapCampo("vereda", reporte.vereda_zona || "");
-    mapCampo("tipo", etiquetaTipoActividad(reporte.tipo_actividad) || "");
+    mapCampo("tipo", reporte.tipo_actividad || "Sin categoría");
     mapCampo(
       "fecha-hora",
       reporte.fecha_observacion +
@@ -1130,6 +1173,61 @@ document.addEventListener("DOMContentLoaded", () => {
       L.marker(latLng).addTo(capaMarkers).bindPopup(popupHtml);
     });
   }
+  // MÓDULO DE CATEGORÍAS (DINÁMICO)
+  async function cargarCategorias() {
+    try {
+      const resp = await fetch("../php/obtener_categorias.php");
+      const data = await resp.json();
+
+      if (data.ok) {
+        // 1. Llenar el select de reportes
+        const selectReporte = document.getElementById("tipoActividad");
+        if (selectReporte) {
+          selectReporte.innerHTML =
+            '<option value="">Seleccione una actividad...</option>';
+          data.categorias.forEach((cat) => {
+            selectReporte.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre_categoria}</option>`;
+          });
+        }
+
+        // 2. Llenar el select de crear/editar autoridad
+        const selectsAutoridad = document.querySelectorAll(
+          'select[name="especialidad"]',
+        );
+        selectsAutoridad.forEach((select) => {
+          // Guardamos el valor actual por si se está editando
+          const valorActual = select.value;
+          select.innerHTML =
+            '<option value="0">General (Todas las categorías)</option>';
+          data.categorias.forEach((cat) => {
+            select.innerHTML += `<option value="${cat.id_categoria}">${cat.nombre_categoria}</option>`;
+          });
+          select.value = valorActual; // Restauramos la selección
+        });
+
+        // 3. Llenar la tabla del administrador
+        const tbodyCat = document.getElementById("tabla-categorias-body");
+        if (tbodyCat) {
+          tbodyCat.innerHTML = "";
+          data.categorias.forEach((cat) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                        <td>${cat.id_categoria}</td>
+                        <td><strong>${cat.nombre_categoria}</strong></td>
+                        <td>
+                            <button class="btn-secundario" style="background:#ef4444; color:white; border:none;" onclick="eliminarCategoria(${cat.id_categoria}, '${cat.nombre_categoria}')">
+                                🗑️ Eliminar
+                            </button>
+                        </td>
+                    `;
+            tbodyCat.appendChild(tr);
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Error al cargar categorías:", error);
+    }
+  }
   // mapa google
   const btnAbrirMapa = document.getElementById("btn-abrir-mapa");
   const modalMapa = document.getElementById("modal-mapa");
@@ -1247,6 +1345,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
   //INICIO
+  cargarCategorias();
   aplicarEstadoSesion();
   // Cuando el usuario cambie el tipo de actividad, cargamos autoridades
   if (selectTipoActividad && selectAutoridadReporte) {

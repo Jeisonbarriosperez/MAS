@@ -742,3 +742,66 @@ footer {
         justify-content: center;
     }
 }
+/* Tarjeta independiente para gestión de categorías */
+.categoria-card {
+    background: var(--blanco-cristal, rgba(255, 255, 255, 0.92));
+    backdrop-filter: blur(4px);
+    border-radius: var(--radio-extreme, 2rem);
+    padding: 1.8rem 2rem;
+    margin: 2rem auto;          /* separación arriba/abajo + centrado */
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    box-shadow: var(--sombra-global, 0 20px 35px -12px rgba(0,0,0,0.2));
+    transition: var(--transicion-elegante, all 0.35s ease);
+}
+
+/* Efecto hover sutil (opcional) */
+.categoria-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sombra-hover, 0 25px 40px -12px rgba(0,112,243,0.3));
+    border-color: rgba(45, 212, 191, 0.6);
+}
+
+/* Línea decorativa superior (como en las secciones) */
+.categoria-card {
+    position: relative;
+    overflow: hidden;
+}
+.categoria-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #2dd4bf, #0ea5e9, #38bdf8, #2dd4bf);
+    background-size: 200% auto;
+    animation: shineBorder 4s linear infinite;
+}
+
+/* Ajuste del formulario dentro de la tarjeta */
+.categoria-card form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0 1rem;
+}
+.categoria-card input {
+    flex: 3;
+    min-width: 200px;
+}
+.categoria-card .btn-primario {
+    flex-shrink: 0;
+}
+
+/* Espaciado para la tabla */
+.categoria-card .tabla-contenedor {
+    margin-top: 1.5rem;
+}
+
+/* Responsive: menos padding en móviles */
+@media (max-width: 680px) {
+    .categoria-card {
+        padding: 1.2rem;
+        margin: 1rem;
+    }
+}

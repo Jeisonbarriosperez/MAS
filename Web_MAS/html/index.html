@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -10,6 +11,7 @@
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
+
 <body>
   <!-- Encabezado principal -->
   <header>
@@ -50,19 +52,7 @@
         <div class="campo">
           <label for="tipoActividad">Tipo de actividad *</label>
           <select id="tipoActividad" name="tipoActividad" required>
-            <option value="">Selecciona una opción</option>
-            <!-- Opciones originales -->
-            <option value="tala">Tala de árboles</option>
-            <option value="quema">Quema (pastizales, bosques)</option>
-            <option value="cambio_uso">Cambio de uso del suelo</option>
-            <option value="extraccion">Extracción ilegal (madera, carbón)</option>
-            <!-- Nuevas opciones ambientales -->
-            <option value="contaminacion_agua">Contaminación de cuerpos de agua (ríos, ciénagas)</option>
-            <option value="contaminacion_aire">Contaminación del aire (emisiones industriales, quema de basura)</option>
-            <option value="residuos_solidos">Manejo inadecuado de residuos sólidos (basuras, escombros)</option>
-            <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
-            <option value="mineria_ilegal">Minería ilegal (dragado, mercurio)</option>
-            <option value="otra">Otra actividad ambiental</option>
+            <option value="">Seleccione una actividad...</option>
           </select>
         </div>
         <!-- Municipio -->
@@ -400,6 +390,7 @@
           </form>
         </div>
     </section>
+
     <section id="panel-admin" class="oculto">
       <h2>Panel de administrador</h2>
       <p>
@@ -442,20 +433,31 @@
         </div>
         <div class="campo">
           <select id="autEspecialidad" name="especialidad" required>
-            <option value="tala">Tala de árboles</option>
-            <option value="quema">Quema</option>
-            <option value="cambio_uso">Cambio de uso del suelo</option>
-            <option value="extraccion">Extracción ilegal</option>
-            <!-- Nuevas especialidades -->
-            <option value="contaminacion_agua">Contaminación de cuerpos de agua</option>
-            <option value="contaminacion_aire">Contaminación del aire</option>
-            <option value="residuos_solidos">Manejo inadecuado de residuos sólidos</option>
-            <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
-            <option value="mineria_ilegal">Minería ilegal</option>
-            <option value="otra">Otra / general</option>
+            <option value="0">General (Atiende todas las categorías)</option>
           </select>
         </div>
       </form>
+      <!-- NUEVA SECCIÓN: Gestión de categorias -->
+      <div class="categoria-card">
+        <h3>Gestión de Categorías Ambientales</h3>
+        <p>Crea nuevas categorías de afectación o elimina las que no estén en uso.</p>
+        <form id="form-crear-categoria">
+          <input type="text" id="nueva-categoria-nombre" placeholder="Ej: Pesca con dinamita" required>
+          <button type="submit" class="btn-primario">Agregar Categoría</button>
+        </form>
+        <div class="tabla-contenedor">
+          <table class="tabla-admin">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre de la Categoría</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-categorias-body"></tbody>
+          </table>
+        </div>
+      </div>
       <!-- NUEVA SECCIÓN: Gestión de usuarios -->
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
       <h3>Gestión de usuarios</h3>
@@ -518,19 +520,7 @@
           <div class="campo">
             <label for="adminUserEspecialidad">Especialidad (si es autoridad)</label>
             <select id="adminUserEspecialidad" name="especialidad">
-              <option value="">(Ninguna / no aplica)</option>
-              <option value="tala">Tala de árboles</option>
-              <option value="quema">Quema</option>
-              <option value="cambio_uso">Cambio de uso del suelo</option>
-              <option value="extraccion">Extracción ilegal</option>
-              <option value="otra">Otra</option>
-              <option value="general">General</option>
-              <!-- NUEVAS ESPECIALIDADES -->
-              <option value="contaminacion_agua">Contaminación de cuerpos de agua</option>
-              <option value="contaminacion_aire">Contaminación del aire</option>
-              <option value="residuos_solidos">Manejo inadecuado de residuos sólidos</option>
-              <option value="trafico_fauna">Tráfico ilegal de fauna silvestre</option>
-              <option value="mineria_ilegal">Minería ilegal</option>
+              <option value="0">General (Atiende todas las categorías)</option>
             </select>
           </div>
           <div class="campo campo-full">
@@ -547,6 +537,12 @@
         </form>
       </div>
     </section>
+
+
+
+
+
+
     <!-- Panel privado de usuario (ciudadano) -->
     <section id="panel-usuario" class="oculto">
       <h2>Mis reportes</h2>
@@ -690,4 +686,5 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 </body>
+
 </html>

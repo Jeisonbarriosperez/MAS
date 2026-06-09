@@ -2,32 +2,35 @@
 // WEB_FORESTACION/php/obtener_autoridades_por_tipo.php
 header('Content-Type: application/json');
 require_once 'conexion.php';
-// Permitimos tanto POST (desde JS) como GET (para probar en el navegador)
-$tipo = $_POST['tipo_actividad'] ?? ($_GET['tipo_actividad'] ?? '');
-if ($tipo === '') {
+
+// Ahora recibimos un ID numérico
+$id_categoria = intval($_POST['tipo_actividad'] ?? ($_GET['tipo_actividad'] ?? 0));
+
+if ($id_categoria <= 0) {
     echo json_encode([
         'ok'      => false,
-        'mensaje' => 'No se recibió el tipo de actividad.'
+        'mensaje' => 'No se recibió una categoría válida.'
     ]);
     exit;
 }
+
 try {
+    // Hacemos un JOIN para obtener el nombre de la especialidad y enviarlo a JS
     $sql = "SELECT 
-                id_usuario,
-                nombre,
-                apellido,
-                municipio,
-                especialidad
-            FROM usuarios
-            WHERE tipo_usuario = 'autoridad'
-              AND (
-                    especialidad = :tipo
-                 OR especialidad = 'general'
-                 OR especialidad = 'otra'
-              )";
+                u.id_usuario,
+                u.nombre,
+                u.apellido,
+                u.municipio,
+                IFNULL(c.nombre_categoria, 'General') AS especialidad
+            FROM usuarios u
+            LEFT JOIN categorias_actividad c ON u.id_especialidad = c.id_categoria
+            WHERE u.tipo_usuario = 'autoridad'
+              AND (u.id_especialidad = :cat OR u.id_especialidad IS NULL)";
+              
     $stmt = $pdo->prepare($sql);
-    $stmt->execute([':tipo' => $tipo]);
+    $stmt->execute([':cat' => $id_categoria]);
     $autoridades = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
     echo json_encode([
         'ok'   => true,
         'data' => $autoridades
@@ -38,3 +41,4 @@ try {
         'mensaje' => 'Error al obtener autoridades: ' . $e->getMessage()
     ]);
 }
+?>

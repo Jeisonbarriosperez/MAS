@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 require_once 'conexion.php';
 $id_usuario        = intval($_POST['id_usuario']   ?? 0);
 $id_autoridad      = intval($_POST['id_autoridad'] ?? 0);
-$tipo_actividad    = $_POST['tipoActividad'] ?? '';
+$id_categoria      = intval($_POST['tipoActividad'] ?? 0);
 $municipio         = trim($_POST['municipio'] ?? '');
 $vereda            = trim($_POST['vereda']    ?? '');
 $coordenadas       = trim($_POST['coordenadas'] ?? ''); 
@@ -25,7 +25,7 @@ if (empty($_FILES['evidencia']) || $_FILES['evidencia']['error'] !== UPLOAD_ERR_
 if (
     $id_usuario   <= 0 ||
     $id_autoridad <= 0 ||
-    $tipo_actividad === '' ||
+    $id_categoria <= 0 ||
     $municipio === '' ||
     $vereda === '' ||
     $fecha_observacion === '' ||
@@ -53,7 +53,7 @@ try {
         exit;
     }
     // 3) Verificar que la autoridad exista, sea autoridad y esté activa
-    $sqlAut = "SELECT id_usuario, tipo_usuario, estado, especialidad
+    $sqlAut = "SELECT id_usuario, tipo_usuario, estado, id_especialidad
                FROM usuarios
                WHERE id_usuario = :idAut";
     $stmtAut = $pdo->prepare($sqlAut);
@@ -88,18 +88,18 @@ try {
     }
     // 5) Insertar reporte con autoridad asignada
     $sql = "INSERT INTO reportes_deforestacion
-            (id_usuario, id_autoridad, tipo_actividad, municipio, vereda_zona, coordenadas,
+            (id_usuario, id_autoridad, id_categoria, municipio, vereda_zona, coordenadas,
              fecha_observacion, hora_observacion, hectareas_afectadas,
              ecosistema, descripcion, evidencia_foto)
             VALUES
-            (:id_usuario, :id_autoridad, :tipo_actividad, :municipio, :vereda_zona, :coordenadas,
+            (:id_usuario, :id_autoridad, :id_categoria, :municipio, :vereda_zona, :coordenadas,
              :fecha_observacion, :hora_observacion, :hectareas_afectadas,
              :ecosistema, :descripcion, :evidencia_foto)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':id_usuario'          => $id_usuario,
         ':id_autoridad'        => $id_autoridad,
-        ':tipo_actividad'      => $tipo_actividad,
+        ':id_categoria'        => $id_categoria,
         ':municipio'           => $municipio,
         ':vereda_zona'         => $vereda,
         ':coordenadas'         => $coordenadas !== '' ? $coordenadas : null,

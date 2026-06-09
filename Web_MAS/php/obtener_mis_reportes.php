@@ -1,30 +1,32 @@
 <?php
-// WEB_FORESTACION/php/obtener_mis_reportes.php
+// WEB_FORESTACION/php/obtener_reportes.php
 header('Content-Type: application/json');
 require_once 'conexion.php';
-$id_usuario = intval($_POST['id_usuario'] ?? 0);
-if ($id_usuario <= 0) {
-    echo json_encode([
-        'ok' => false,
-        'mensaje' => 'ID de usuario inválido.'
-    ]);
-    exit;
-}
+
 try {
-    $sql = "SELECT *
-            FROM reportes_deforestacion
-            WHERE id_usuario = :id
-            ORDER BY fecha_registro DESC";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([':id' => $id_usuario]);
-    $rows = $stmt->fetchAll();
+    // Combinamos reportes con usuarios (para saber quién reportó) y con categorías (para saber el tipo de actividad en texto)
+    $sql = "SELECT
+              r.*,
+              u.nombre   AS ciudadano_nombre,
+              u.apellido AS ciudadano_apellido,
+              u.correo   AS ciudadano_correo,
+              IFNULL(c.nombre_categoria, 'No especificado') AS tipo_actividad
+            FROM reportes_deforestacion r
+            JOIN usuarios u ON u.id_usuario = r.id_usuario
+            LEFT JOIN categorias_actividad c ON r.id_categoria = c.id_categoria
+            ORDER BY r.fecha_registro DESC";
+            
+    $stmt = $pdo->query($sql);
+    $reportes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
     echo json_encode([
         'ok'   => true,
-        'data' => $rows
+        'data' => $reportes
     ]);
 } catch (PDOException $e) {
     echo json_encode([
         'ok' => false,
-        'mensaje' => 'Error al obtener tus reportes: ' . $e->getMessage()
+        'mensaje' => 'Error al obtener reportes: ' . $e->getMessage()
     ]);
 }
+?>
