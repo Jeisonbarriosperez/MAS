@@ -3,10 +3,8 @@
 header('Content-Type: application/json');
 
 require_once 'conexion.php';
-
 $id_reporte = intval($_POST['id_reporte'] ?? 0);
 $id_usuario = intval($_POST['id_usuario'] ?? 0);
-
 $tipo_actividad    = $_POST['tipoActividad'] ?? '';
 $municipio         = trim($_POST['municipio'] ?? '');
 $vereda            = trim($_POST['vereda'] ?? '');
@@ -16,7 +14,6 @@ $hora_observacion  = $_POST['hora'] ?? null;
 $hectareas         = $_POST['hectareas'] ?? null;
 $ecosistema        = $_POST['ecosistema'] ?? 'no_especificado';
 $descripcion       = trim($_POST['descripcion'] ?? '');
-
 // Validar básicos
 if (
     $id_reporte <= 0 ||
@@ -45,7 +42,6 @@ try {
         ':usuario' => $id_usuario
     ]);
     $row = $stmtSel->fetch();
-
     if (!$row) {
         echo json_encode([
             'ok' => false,
@@ -53,32 +49,24 @@ try {
         ]);
         exit;
     }
-
     $rutaAnterior = $row['evidencia_foto'];
     $rutaRelativaFoto = $rutaAnterior;
-
     // 2) ¿Subió una nueva imagen?
     if (!empty($_FILES['evidencia']) && $_FILES['evidencia']['error'] === UPLOAD_ERR_OK) {
         $tmpName  = $_FILES['evidencia']['tmp_name'];
         $nombreOriginal = $_FILES['evidencia']['name'];
-
         $info = pathinfo($nombreOriginal);
         $extension = strtolower($info['extension'] ?? '');
         $permitidas = ['jpg', 'jpeg', 'png'];
-
         if (in_array($extension, $permitidas)) {
             $carpeta = __DIR__ . '/../recursos/evidencias/';
-
             if (!is_dir($carpeta)) {
                 mkdir($carpeta, 0777, true);
             }
-
             $nombreFinal = time() . '_' . random_int(1000, 9999) . '.' . $extension;
             $rutaFisicaNueva  = $carpeta . $nombreFinal;
-
             if (move_uploaded_file($tmpName, $rutaFisicaNueva)) {
                 $rutaRelativaFoto = 'recursos/evidencias/' . $nombreFinal;
-
                 // borrar la foto anterior si existía
                 if ($rutaAnterior) {
                     $rutaFisicaVieja = __DIR__ . '/../' . $rutaAnterior;
@@ -89,7 +77,6 @@ try {
             }
         }
     }
-
     // 3) Actualizar registro
     $sqlUpd = "UPDATE reportes_deforestacion
                SET tipo_actividad      = :tipo_actividad,
@@ -105,7 +92,6 @@ try {
                    fecha_actualizacion = NOW()
                WHERE id_reporte = :id_reporte
                  AND id_usuario = :id_usuario";
-
     $stmtUpd = $pdo->prepare($sqlUpd);
     $stmtUpd->execute([
         ':tipo_actividad'     => $tipo_actividad,
@@ -121,7 +107,6 @@ try {
         ':id_reporte'         => $id_reporte,
         ':id_usuario'         => $id_usuario
     ]);
-
     echo json_encode([
         'ok' => true,
         'mensaje' => 'Reporte actualizado correctamente.'

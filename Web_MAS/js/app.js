@@ -47,22 +47,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const btnCancelarEdicionUsuario = document.getElementById(
     "btn-cancelar-edicion-usuario",
   );
-
   let graficoTipos = null;
   let graficoMunicipios = null;
-  let usuariosAdmin = []; // lista de usuarios para el panel admin
-  // =========================
-  // 1. Estado global
-  // =========================
-  let autoridades = []; // lista completa desde el backend
-  let sesionActual = null; // { id_usuario, nombre, rol }
-  let reportes = []; // TODOS los reportes para mapa + stats + autoridad/admin
-  let misReportes = []; // Solo reportes del ciudadano logueado
+  let usuariosAdmin = [];
+  let autoridades = [];
+  let sesionActual = null;
+  let reportes = [];
+  let misReportes = [];
   let mapa = null;
   let capaMarkers = null;
   let reporteSeleccionadoAutoridad = null;
   let reporteSeleccionadoCiudadano = null;
-  let reporteEnEdicion = null; // null = modo crear, objeto = modo editar
+  let reporteEnEdicion = null;
   let btnSubmitReporte = null;
   let textoOriginalBtnReporte = "";
   if (formReporte) {
@@ -72,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
   // 2. Pestañas LOGIN / REGISTRO
-  // =========================
   if (authTabs && panelLogin && panelRegistro) {
     authTabs.forEach((tab) => {
       tab.addEventListener("click", () => {
@@ -89,9 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-  // =========================
   // 3. Pestañas EDUCACIÓN AMBIENTAL
-  // =========================
   if (eduTabs && eduPanelCiudadania && eduPanelAutoridades) {
     eduTabs.forEach((tab) => {
       tab.addEventListener("click", () => {
@@ -111,13 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
   function dibujarGraficoTipos() {
     const ctx = document.getElementById("grafico-tipos");
     if (!ctx) return;
-
     const conteo = {};
     reportes.forEach((r) => {
       const tipo = r.tipo_actividad || "otra";
       conteo[tipo] = (conteo[tipo] || 0) + 1;
     });
-
     const etiquetas = {
       tala: "Tala de árboles",
       quema: "Quema",
@@ -130,12 +121,9 @@ document.addEventListener("DOMContentLoaded", () => {
       trafico_fauna: "Tráfico de fauna",
       mineria_ilegal: "Minería ilegal",
     };
-
     const labels = Object.keys(conteo).map((t) => etiquetas[t] || t);
     const data = Object.values(conteo);
-
     if (graficoTipos) graficoTipos.destroy();
-
     graficoTipos = new Chart(ctx, {
       type: "bar",
       data: {
@@ -185,11 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   }
-
   function dibujarGraficoMunicipios() {
     const ctx = document.getElementById("grafico-municipios");
     if (!ctx) return;
-
     const conteo = {};
     reportes.forEach((r) => {
       if (r.municipio) {
@@ -197,12 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
         conteo[muni] = (conteo[muni] || 0) + 1;
       }
     });
-
     const labels = Object.keys(conteo);
     const data = Object.values(conteo);
-
     if (graficoMunicipios) graficoMunicipios.destroy();
-
     graficoMunicipios = new Chart(ctx, {
       type: "pie",
       data: {
@@ -253,8 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
       },
     });
   }
-  // 4. Control de VISIBILIDAD por ROL
-  // =========================
+  //Control de VISIBILIDAD por ROL
   function ocultarElemento(el) {
     if (!el) return;
     el.classList.add("oculto");
@@ -295,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (reporteEnEdicion && reporteEnEdicion.coordenadas) {
         cargarCoordenadasEnMapaReporte(reporteEnEdicion.coordenadas);
       }
-    }, 100); // pequeño retraso para que el DOM esté listo
+    }, 100);
     mostrarElemento(seccionMapa);
     mostrarElemento(seccionEstadisticas);
     // Ocultamos todos los paneles
@@ -319,7 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
         panelAdmin.scrollIntoView({ behavior: "smooth" });
       }
     }
-    // ⬇ Aquí forzamos al mapa a recalcular tamaño
     inicializarMapa();
     if (mapa) {
       setTimeout(() => {
@@ -327,7 +308,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 300);
     }
   }
-  // X. AUTORIDADES POR TIPO DE ACTIVIDAD
+  //AUTORIDADES POR TIPO DE ACTIVIDAD
   function etiquetaEspecialidad(especialidad) {
     const map = {
       tala: "Tala de árboles",
@@ -442,9 +423,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.error("Error al obtener reportes:", error);
     }
   }
-  // =========================
   // 6. Cargar MIS reportes
-  // =========================
   async function cargarMisReportes() {
     if (!sesionActual || sesionActual.rol !== "ciudadano") {
       misReportes = [];
@@ -616,7 +595,7 @@ document.addEventListener("DOMContentLoaded", () => {
       detalleUsuarioAdmin.classList.add("oculto");
     });
   }
-  // 7. LOGIN
+  // LOGIN
   if (formLogin) {
     formLogin.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -636,22 +615,18 @@ document.addEventListener("DOMContentLoaded", () => {
         sesionActual = {
           id_usuario: data.id_usuario,
           nombre: data.nombre,
-          rol: (data.rol || "").toLowerCase(), // 👈 aseguramos minúsculas
+          rol: (data.rol || "").toLowerCase(),
         };
         alert(
           `Bienvenido, ${sesionActual.nombre} (${sesionActual.rol}). Sesión iniciada.`,
         );
         console.log("SesionActual en JS:", sesionActual);
-        // Decidir hacia dónde hacer scroll según el rol
         let destino = null;
         if (sesionActual.rol === "ciudadano") destino = "usuario";
         else if (sesionActual.rol === "autoridad") destino = "autoridad";
         else if (sesionActual.rol === "admin") destino = "admin";
-        // Aplicar visibilidad según rol (esto ya muestra REPORTAR para todos)
         aplicarEstadoSesion(destino);
-        // Cargamos reportes generales (mapa, stats, autoridad/admin)
         await cargarReportesDesdeServidor();
-        // Si es ciudadano, también cargamos sus propios reportes
         if (sesionActual.rol === "ciudadano") {
           await cargarMisReportes();
         }
@@ -667,8 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // 8. REGISTRO (solo ciudadanos)
-  // =========================
+  // REGISTRO (solo ciudadanos)
   if (formRegistro) {
     formRegistro.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -692,7 +666,6 @@ document.addEventListener("DOMContentLoaded", () => {
         alert(data.mensaje || "Respuesta del servidor.");
         if (data.ok) {
           formRegistro.reset();
-          // Cambiamos a la pestaña de LOGIN
           if (authTabs.length >= 2) {
             authTabs.forEach((t) => t.classList.remove("activo"));
             authTabs[0].classList.add("activo");
@@ -708,9 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // =========================
-  // 9. ESTADÍSTICAS
-  // =========================
+  // ESTADÍSTICAS
   function actualizarEstadisticas() {
     if (
       !statTotal ||
@@ -721,35 +692,29 @@ document.addEventListener("DOMContentLoaded", () => {
     ) {
       return;
     }
-
     const totalReportes = reportes.length;
     let totalHectareas = 0;
     const setMunicipios = new Set();
-    const conteoPorTipo = {}; // objeto dinámico para cualquier tipo
+    const conteoPorTipo = {};
     const conteoPorMunicipio = {};
-
     reportes.forEach((r) => {
       // Hectáreas
       const valor = Number(r.hectareas_afectadas);
       if (!isNaN(valor)) totalHectareas += valor;
-
       // Municipios
       if (r.municipio) {
         setMunicipios.add(r.municipio);
         conteoPorMunicipio[r.municipio] =
           (conteoPorMunicipio[r.municipio] || 0) + 1;
       }
-
       // Tipo de actividad (dinámico)
       const tipo = r.tipo_actividad || "otra";
       conteoPorTipo[tipo] = (conteoPorTipo[tipo] || 0) + 1;
     });
-
     statTotal.textContent = totalReportes;
     statHectareas.textContent = totalHectareas.toFixed(2);
     statMunicipios.textContent = setMunicipios.size;
-
-    // Mapeo de nombres legibles para todos los tipos (incluye los nuevos)
+    // Mapeo de nombres legibles para todos los tipos
     const etiquetasTipo = {
       tala: "🌳 Tala de árboles",
       quema: "🔥 Quema",
@@ -762,8 +727,6 @@ document.addEventListener("DOMContentLoaded", () => {
       trafico_fauna: "🐾 Tráfico de fauna",
       mineria_ilegal: "⛏️ Minería ilegal",
     };
-
-    // Renderizar lista de tipos dinámicamente
     listaTipoActividad.innerHTML = "";
     // Ordenar por nombre de tipo (opcional)
     const tiposOrdenados = Object.keys(conteoPorTipo).sort();
@@ -775,7 +738,6 @@ document.addEventListener("DOMContentLoaded", () => {
       li.innerHTML = `<span class="stat-label">${label}</span><span class="stat-badge">${cantidad}</span>`;
       listaTipoActividad.appendChild(li);
     }
-
     // Renderizar municipios
     listaMunicipios.innerHTML = "";
     Object.keys(conteoPorMunicipio).forEach((muni) => {
@@ -786,9 +748,7 @@ document.addEventListener("DOMContentLoaded", () => {
     dibujarGraficoTipos();
     dibujarGraficoMunicipios();
   }
-  // =========================
-  // 🔟 TABLA PANEL AUTORIDAD
-  // =========================
+  // TABLA PANEL AUTORIDAD
   function renderizarTablaAutoridad() {
     if (!tbodyAutoridad) return;
     tbodyAutoridad.innerHTML = "";
@@ -942,9 +902,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // =========================
-  // 1️⃣1. TABLA PANEL CIUDADANO (MIS REPORTES)
-  // =========================
+  // TABLA PANEL CIUDADANO (MIS REPORTES)
   function renderizarTablaUsuario() {
     if (!tbodyMisReportes) return;
     tbodyMisReportes.innerHTML = "";
@@ -1015,15 +973,12 @@ document.addEventListener("DOMContentLoaded", () => {
         detalleMiReporteImg.style.display = "none";
       }
     }
-    // Suponiendo que tienes un objeto "reporte" que viene de tu BD con "reporte.coordenadas"
     const urlMapa = `https://www.google.com/maps?q=${reporte.coordenadas}`;
-
     // En el HTML que inyectas al panel, agrega esto:
     const htmlUbicacion = `
   <p><strong>Ubicación exacta:</strong> ${reporte.coordenadas}</p>
   <a href="${urlMapa}" target="_blank" class="btn-secundario">🗺️ Ver en el mapa</a>
 `;
-    // Asegúrate de concatenar 'htmlUbicacion' dentro del contenedor de detalles de tu app.js
   }
   if (tbodyMisReportes) {
     tbodyMisReportes.addEventListener("click", async (e) => {
@@ -1070,9 +1025,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("ecosistema").value = reporte.ecosistema || "";
         document.getElementById("descripcion").value =
           reporte.descripcion || "";
-        // El input file de evidencia NO se puede rellenar por seguridad,
-        // si el usuario quiere cambiar la foto, selecciona una nueva.
-        // Llevar al usuario a la sección de reporte
         if (seccionReportar) {
           seccionReportar.scrollIntoView({ behavior: "smooth" });
         }
@@ -1110,8 +1062,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // 2. PANEL ADMIN: crear autoridad
-  // =========================
+  // PANEL ADMIN: crear autoridad
   if (formCrearAutoridad) {
     formCrearAutoridad.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1137,14 +1088,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // =========================
-  // 1️⃣3. MAPA (Leaflet)
-  // =========================
+  // MAPA (Leaflet)
   function inicializarMapa() {
     const divMapa = document.getElementById("mapa-zonas");
     if (!divMapa) return;
-    if (typeof L === "undefined") return; // Leaflet aún no cargó
-    if (mapa) return; // ya estaba creado
+    if (typeof L === "undefined") return;
+    if (mapa) return;
     mapa = L.map("mapa-zonas", {
       scrollWheelZoom: false,
     }).setView([9.315, -75.4], 8);
@@ -1156,7 +1105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     actualizarMarcadores();
   }
   function obtenerLatLng(reporte) {
-    // Si el reporte tiene coordenadas tipo "9.31, -75.40"
     if (reporte.coordenadas) {
       const partes = String(reporte.coordenadas).split(",");
       if (partes.length !== 2) return null;
@@ -1165,7 +1113,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (isNaN(lat) || isNaN(lon)) return null;
       return [lat, lon];
     }
-    // Si NO hay coordenadas, por ahora no ponemos marcador
     return null;
   }
   function actualizarMarcadores() {
@@ -1173,8 +1120,7 @@ document.addEventListener("DOMContentLoaded", () => {
     capaMarkers.clearLayers();
     reportes.forEach((r) => {
       const latLng = obtenerLatLng(r);
-      if (!latLng) return; // sin coordenadas -> sin marcador
-
+      if (!latLng) return;
       const popupHtml = `
       <strong>${etiquetaTipoActividad(r.tipo_actividad) || "Actividad"}</strong><br/>
       <span>${r.municipio || ""} - ${r.vereda_zona || ""}</span><br/>
@@ -1184,8 +1130,7 @@ document.addEventListener("DOMContentLoaded", () => {
       L.marker(latLng).addTo(capaMarkers).bindPopup(popupHtml);
     });
   }
-  //nuevo mapa
-  // 1. Referencias
+  // mapa google
   const btnAbrirMapa = document.getElementById("btn-abrir-mapa");
   const modalMapa = document.getElementById("modal-mapa");
   const btnConfirmarUbicacion = document.getElementById(
@@ -1193,39 +1138,28 @@ document.addEventListener("DOMContentLoaded", () => {
   );
   const btnMiUbicacion = document.getElementById("btn-mi-ubicacion");
   const inputCoordenadas = document.getElementById("coordenadas");
-
-  // 2. Inicializar el mapa (Asegúrate de no inicializarlo dos veces)
-  let mapaReporte = L.map("contenedor-mapa-reporte").setView([9.315, -75.4], 8); // Centrado en Sucre
+  let mapaReporte = L.map("contenedor-mapa-reporte").setView([9.315, -75.4], 8);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(
     mapaReporte,
   );
   let marcadorReporte = L.marker([9.315, -75.4], { draggable: true }).addTo(
     mapaReporte,
   );
-
-  // Actualiza el input cuando el usuario termina de arrastrar el pin
   marcadorReporte.on("dragend", function (e) {
     const pos = e.target.getLatLng();
     inputCoordenadas.value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
   });
-
-  // 3. Abrir el Modal (El secreto para que Leaflet funcione oculto)
   btnAbrirMapa.addEventListener("click", () => {
     modalMapa.classList.add("activo");
-    // CRÍTICO: Leaflet se "rompe" si carga dentro de un div oculto.
-    // Esta línea obliga al mapa a recalcular su tamaño al abrir el modal.
     setTimeout(() => {
       mapaReporte.invalidateSize();
     }, 200);
   });
-  // 4. Cerrar el modal
   btnConfirmarUbicacion.addEventListener("click", () => {
     modalMapa.classList.remove("activo");
-    // Si no movió el pin, guardamos la ubicación actual del pin
     const pos = marcadorReporte.getLatLng();
     inputCoordenadas.value = `${pos.lat.toFixed(6)}, ${pos.lng.toFixed(6)}`;
   });
-  // 5. ¡LA MAGIA DE TU UBICACIÓN ACTUAL!
   btnMiUbicacion.addEventListener("click", () => {
     if (navigator.geolocation) {
       btnMiUbicacion.textContent = "⌛ Buscando...";
@@ -1233,26 +1167,24 @@ document.addEventListener("DOMContentLoaded", () => {
         (position) => {
           const lat = position.coords.latitude;
           const lng = position.coords.longitude;
-          // Acercar el mapa (zoom 16) y mover el marcador ahí
           mapaReporte.flyTo([lat, lng], 16);
           marcadorReporte.setLatLng([lat, lng]);
           inputCoordenadas.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
-          btnMiUbicacion.textContent = "🎯 Acercar a mi ubicación actual";
+          btnMiUbicacion.textContent = "Acercar a mi ubicación actual";
         },
         (error) => {
           alert(
             "Debes permitir el acceso a tu ubicación en el navegador para usar esta función.",
           );
-          btnMiUbicacion.textContent = "🎯 Acercar a mi ubicación actual";
+          btnMiUbicacion.textContent = "Acercar a mi ubicación actual";
         },
-        { enableHighAccuracy: true }, // Intenta usar GPS si está en móvil
+        { enableHighAccuracy: true },
       );
     } else {
       alert("Tu navegador no soporta la geolocalización.");
     }
   });
-
-  //  FORMULARIO REPORTE (solo ciudadano)
+  //  FORMULARIO REPORTE
   if (formReporte) {
     formReporte.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1270,13 +1202,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const ecosistema = document.getElementById("ecosistema").value;
       const descripcion = document.getElementById("descripcion").value.trim();
       const idAutoridad = document.getElementById("idAutoridadReporte").value;
-
-      // Validación de campos obligatorios (incluyendo coordenadas)
       if (
         !tipoActividad ||
         !municipio ||
         !vereda ||
-        !coordenadas || // ← nuevo campo obligatorio
+        !coordenadas ||
         !fecha ||
         !descripcion ||
         !idAutoridad
@@ -1286,11 +1216,9 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         return;
       }
-
       const formData = new FormData(formReporte);
       formData.append("id_usuario", sesionActual.id_usuario);
       formData.append("id_autoridad", idAutoridad);
-
       try {
         const resp = await fetch("../php/crear_reporte.php", {
           method: "POST",
@@ -1318,12 +1246,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
-  // 5. INICIO
-  // 1️⃣5. INICIO
+  //INICIO
   aplicarEstadoSesion();
   // Cuando el usuario cambie el tipo de actividad, cargamos autoridades
   if (selectTipoActividad && selectAutoridadReporte) {
-    limpiarSelectAutoridad(); // estado inicial
+    limpiarSelectAutoridad();
     selectTipoActividad.addEventListener("change", () => {
       const tipo = selectTipoActividad.value;
       cargarAutoridadesPorTipo(tipo);
