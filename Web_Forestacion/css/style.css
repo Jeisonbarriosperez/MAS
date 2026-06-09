@@ -1,11 +1,7 @@
-/* ==============================================
-   🌟 ECOGUARDIAN 2.0 — DESIGN SYSTEM AZUL + VERDE 
-   ============================================== */
-
+/* ECOGUARDIAN 2.0 — DESIGN SYSTEM AZUL + VERDE*/
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap');
-
 :root {
-  /* 🎨 Paleta Azul profundo + Verde neón */
+  /* Paleta Azul profundo + Verde neón */
   --azul-cobalto: #0f2b4d;
   --azul-océano: #1e4a76;
   --azul-cielo: #38bdf8;
@@ -20,18 +16,15 @@
   --radio-suave: 1.25rem;
   --transicion-elegante: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
 }
-
-/* ===== RESET + BASE ===== */
+/* RESET + BASE  */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 html {
   scroll-behavior: smooth;
 }
-
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   background: radial-gradient(ellipse at 10% 20%, #eef2ff, #d9f0ec);
@@ -40,7 +33,6 @@ body {
   min-height: 100vh;
   position: relative;
 }
-
 /* Fondo dinámico con olas y partículas */
 body::before {
   content: "";
@@ -52,7 +44,6 @@ body::before {
   pointer-events: none;
   z-index: -2;
 }
-
 body::after {
   content: "";
   position: fixed;
@@ -64,8 +55,7 @@ body::after {
   pointer-events: none;
   z-index: -1;
 }
-
-/* ===== HEADER GLASS + NEON ===== */
+/* HEADER GLASS + NEON */
 header {
   position: sticky;
   top: 0;
@@ -82,7 +72,6 @@ header {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   transition: var(--transicion-elegante);
 }
-
 header h1 {
   font-size: 1.5rem;
   font-weight: 800;
@@ -95,7 +84,6 @@ header h1 {
   align-items: center;
   gap: 0.5rem;
 }
-
 header h1::before {
   content: "🌱";
   font-size: 1.6rem;
@@ -105,13 +93,11 @@ header h1::before {
   width: auto;
   height: auto;
 }
-
 header p {
   font-size: 0.85rem;
   color: #cbd5e1;
   font-weight: 400;
 }
-
 /* Menú con botones neomorfos */
 nav ul {
   display: flex;
@@ -119,7 +105,6 @@ nav ul {
   gap: 0.75rem;
   list-style: none;
 }
-
 nav a {
   text-decoration: none;
   font-weight: 600;
@@ -132,7 +117,6 @@ nav a {
   border: 0.5px solid rgba(45, 212, 191, 0.4);
   transition: var(--transicion-elegante);
 }
-
 nav a:hover {
   background: linear-gradient(105deg, #2dd4bf, #0ea5e9);
   color: #0f172a;
@@ -140,15 +124,13 @@ nav a:hover {
   box-shadow: 0 12px 20px -8px rgba(45, 212, 191, 0.5);
   border-color: transparent;
 }
-
-/* ===== MAIN CONTENEDOR ===== */
+/*MAIN CONTENEDOR */
 main {
   max-width: 1280px;
   margin: 2rem auto 3rem;
   padding: 0 1.5rem;
 }
-
-/* ===== SECCIONES TARJETAS ===== */
+/* SECCIONES TARJETAS */
 section {
   background: var(--blanco-cristal);
   backdrop-filter: blur(2px);
@@ -161,13 +143,11 @@ section {
   position: relative;
   overflow: hidden;
 }
-
 section:hover {
   transform: translateY(-6px);
   box-shadow: var(--sombra-hover);
   border-color: rgba(45, 212, 191, 0.6);
 }
-
 /* Línea decorativa superior luminosa */
 section::before {
   content: "";
@@ -180,12 +160,10 @@ section::before {
   background-size: 200% auto;
   animation: shineBorder 4s linear infinite;
 }
-
 @keyframes shineBorder {
   0% { background-position: 0% 0; }
   100% { background-position: 200% 0; }
 }
-
 section h2 {
   font-size: 1.6rem;
   font-weight: 700;
@@ -200,41 +178,35 @@ section h2 {
   border-left: 5px solid #2dd4bf;
   padding-left: 1rem;
 }
-
 section h2::after {
   content: "✦";
   color: #10b981;
   font-size: 1.2rem;
   font-weight: normal;
 }
-
 section p {
   color: #1e293b;
   font-weight: 400;
   line-height: 1.6;
 }
-
-/* ===== FORMULARIO ÉPICO ===== */
+/*FORMULARIO ÉPICO */
 .formulario {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.5rem;
   margin-top: 1.2rem;
 }
-
 .campo {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
-
 .campo label {
   font-weight: 600;
   font-size: 0.85rem;
   color: #0f2b4d;
   letter-spacing: 0.3px;
 }
-
 .campo input,
 .campo select,
 .campo textarea {
@@ -246,7 +218,6 @@ section p {
   transition: var(--transicion-elegante);
   outline: none;
 }
-
 .campo input:focus,
 .campo select:focus,
 .campo textarea:focus {
@@ -254,7 +225,6 @@ section p {
   box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.2);
   transform: scale(0.99);
 }
-
 /* Botón primario con gradiente vivo */
 .btn-primario {
   background: linear-gradient(95deg, #0ea5e9, #2dd4bf);
@@ -269,13 +239,11 @@ section p {
   box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
   align-self: flex-start;
 }
-
 .btn-primario:hover {
   transform: translateY(-3px);
   box-shadow: 0 15px 25px -8px #0ea5e9;
   filter: brightness(1.05);
 }
-
 /* Botones secundarios */
 .btn-secundario {
   background: rgba(56, 189, 248, 0.15);
@@ -286,33 +254,28 @@ section p {
   font-weight: 600;
   transition: 0.2s;
 }
-
 .btn-secundario:hover {
   background: #0ea5e9;
   color: white;
   transform: scale(0.96);
 }
-
 .btn-peligro {
   background: rgba(239, 68, 68, 0.1);
   border: 1px solid #f87171;
   color: #b91c1c;
 }
-
 .btn-peligro:hover {
   background: #dc2626;
   color: white;
   box-shadow: 0 5px 12px #ef4444;
 }
-
-/* ===== AUTENTICACIÓN: PESTAÑAS MODERNAS ===== */
+/* AUTENTICACIÓN: PESTAÑAS MODERNAS */
 .auth-contenedor {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
   border-radius: 2rem;
   padding: 1.2rem;
 }
-
 .auth-tabs {
   display: flex;
   gap: 0.5rem;
@@ -320,7 +283,6 @@ section p {
   border-radius: 60px;
   padding: 0.3rem;
 }
-
 .auth-tab {
   flex: 1;
   border: none;
@@ -331,22 +293,19 @@ section p {
   transition: 0.2s;
   cursor: pointer;
 }
-
 .auth-tab.activo {
   background: linear-gradient(120deg, #0ea5e9, #2dd4bf);
   color: #0f172a;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   transform: translateY(-1px);
 }
-
-/* ===== ESTADÍSTICAS CON TARJETAS FLOTANTES ===== */
+/*ESTADÍSTICAS CON TARJETAS FLOTANTES */
 .stats-resumen {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.2rem;
   margin: 1rem 0;
 }
-
 .stat-card {
   background: linear-gradient(135deg, #ffffff, #f8fafc);
   border-radius: 1.5rem;
@@ -357,13 +316,11 @@ section p {
   position: relative;
   overflow: hidden;
 }
-
 .stat-card:hover {
   transform: translateY(-5px);
   border-color: #2dd4bf;
   box-shadow: 0 15px 30px -10px rgba(45, 212, 191, 0.3);
 }
-
 .stat-valor {
   font-size: 2.2rem;
   font-weight: 800;
@@ -372,15 +329,13 @@ section p {
   -webkit-background-clip: text;
   color: transparent;
 }
-
 .stat-etiqueta {
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 1px;
   color: #475569;
 }
-
-/* ===== MAPA CON BRILLO ===== */
+/*MAPA CON BRILLO*/
 #mapa-zonas {
   width: 100%;
   height: 420px;
@@ -390,12 +345,10 @@ section p {
   border: 2px solid rgba(45, 212, 191, 0.5);
   transition: 0.3s;
 }
-
 #mapa-zonas:hover {
   border-color: #0ea5e9;
 }
-
-/* ===== EDUCACIÓN AMBIENTAL (TABS CRISTAL) ===== */
+/* EDUCACIÓN AMBIENTAL */
 .edu-tabs {
   display: flex;
   gap: 0.5rem;
@@ -404,7 +357,6 @@ section p {
   padding: 0.3rem;
   margin-bottom: 1rem;
 }
-
 .edu-tab {
   flex: 1;
   background: transparent;
@@ -415,19 +367,16 @@ section p {
   transition: 0.2s;
   cursor: pointer;
 }
-
 .edu-tab.activo {
   background: #0ea5e9;
   color: white;
   box-shadow: 0 2px 12px #0ea5e9;
 }
-
 .edu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
   gap: 1.2rem;
 }
-
 .edu-card {
   background: white;
   border-radius: 1.5rem;
@@ -435,42 +384,34 @@ section p {
   border-left: 6px solid #2dd4bf;
   transition: 0.25s;
 }
-
 .edu-card:hover {
   transform: translateX(5px);
   box-shadow: 0 12px 24px -12px #0ea5e9;
 }
-
 /* ===== TABLA PARA AUTORIDADES ===== */
 .tabla-reportes-autoridad {
   overflow-x: auto;
   border-radius: 1.2rem;
 }
-
 .tabla-reportes-autoridad table {
   width: 100%;
   border-collapse: collapse;
   background: rgba(255,255,255,0.7);
   border-radius: 1rem;
 }
-
 .tabla-reportes-autoridad th {
   background: #0f2b4d;
   color: white;
   padding: 0.8rem;
   font-weight: 600;
 }
-
 .tabla-reportes-autoridad td {
   padding: 0.7rem;
   border-bottom: 1px solid #cbd5e1;
 }
-
 .tabla-reportes-autoridad tr:hover {
   background: #e0f2fe;
 }
-
-/* ===== DETALLE REPORTE (FICHA IMPACTANTE) ===== */
 .detalle-reporte {
   background: linear-gradient(125deg, #ffffff, #f9fbfe);
   border-radius: 2rem;
@@ -480,20 +421,17 @@ section p {
   box-shadow: 0 20px 35px -12px rgba(0,0,0,0.1);
   transition: 0.25s;
 }
-
 .detalle-reporte p strong {
   display: inline-block;
   min-width: 160px;
   color: #0f2b4d;
 }
-
 .detalle-imagen img {
   border-radius: 1.5rem;
   box-shadow: 0 12px 28px rgba(0,0,0,0.2);
   border: 2px solid #2dd4bf;
   max-width: 100%;
 }
-
 .detalle-estado {
   margin-top: 1rem;
   display: flex;
@@ -511,10 +449,9 @@ section p {
   max-width: 900px;
   margin: 2rem auto 0 auto;
 }
-
 /* Tarjeta individual de cada gráfico */
 .grafico-card {
-  flex: 1 1 280px;           /* ancho mínimo 280px, se estira */
+  flex: 1 1 280px;          
   max-width: 400px;
   background: #ffffff;
   padding: 1rem;
@@ -524,20 +461,17 @@ section p {
   flex-direction: column;
   align-items: center;
 }
-
 .grafico-card h4 {
   text-align: center;
   margin: 0 0 0.8rem 0;
   color: #2c3e50;
   font-weight: 600;
 }
-
 .grafico-card canvas {
   width: 100% !important;
   height: auto !important;
-  max-height: 240px;         /* limita la altura para mantenerlo compacto */
+  max-height: 240px;         
 }
-/*...............*/
 /* Listas convertidas en tarjetas */
 .stat-lista {
   list-style: none;
@@ -547,7 +481,6 @@ section p {
   flex-wrap: wrap;
   gap: 0.8rem;
 }
-
 .stat-lista li {
   background: #ffffff;
   border-radius: 12px;
@@ -561,12 +494,10 @@ section p {
   border-left: 4px solid #3498db;
   transition: all 0.2s ease;
 }
-
 .stat-lista li:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(0,0,0,0.08);
 }
-
 .stat-label {
   font-size: 0.85rem;
   color: #555;
@@ -575,7 +506,6 @@ section p {
   align-items: center;
   gap: 0.4rem;
 }
-
 .stat-badge {
   background: #ecf0f1;
   color: #2c3e50;
@@ -586,8 +516,6 @@ section p {
   min-width: 2.5rem;
   text-align: center;
 }
-
-/* ===== RESPONSIVE + MICROINTERACCIONES ===== */
 @media (max-width: 780px) {
   header {
     flex-direction: column;
@@ -608,8 +536,6 @@ section p {
     margin-left: 0;
   }
 }
-
-/* ===== ANIMACIONES AL SCROLL (SUTILES) ===== */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -620,23 +546,19 @@ section p {
     transform: translateY(0);
   }
 }
-
 section {
   animation: fadeInUp 0.6s ease-out backwards;
   animation-delay: calc(0.05s * var(--order, 0));
 }
-
 /* efecto hover en cualquier botón */
 button, .btn-primario, .btn-secundario, .btn-peligro {
   cursor: pointer;
   transition: all 0.2s ease;
 }
-
 /* Clase para ocultar */
 .oculto {
   display: none;
 }
-
 /* Pie de página refinado */
 footer {
   text-align: center;
@@ -646,7 +568,6 @@ footer {
   border-top: 1px solid rgba(45,212,191,0.3);
   margin-top: 2rem;
 }
-
 /* Scrollbar personalizado */
 ::-webkit-scrollbar {
   width: 8px;
@@ -659,10 +580,6 @@ footer {
   background: #0ea5e9;
   border-radius: 10px;
 }
-/* ==============================================
-   🗺️ CAMPO COORDENADAS + MODAL MAPA (CORREGIDO)
-   ============================================== */
-
 /* Grupo de coordenadas */
 .grupo-coordenadas {
     display: flex;
@@ -671,7 +588,6 @@ footer {
     align-items: center;
     flex-wrap: wrap;
 }
-
 .grupo-coordenadas input {
     flex: 1;
     min-width: 200px;
@@ -686,13 +602,11 @@ footer {
     cursor: pointer;
     transition: all 0.2s;
 }
-
 .grupo-coordenadas input:focus {
     outline: none;
     border-color: var(--turquesa-glaciar);
     background: white;
 }
-
 /* Botón de abrir mapa */
 #btn-abrir-mapa {
     flex-shrink: 0;
@@ -710,13 +624,11 @@ footer {
     cursor: pointer;
     transition: all 0.2s;
 }
-
 #btn-abrir-mapa:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 14px rgba(14, 165, 233, 0.3);
 }
-
-/* ===== MODAL MAPA – VERSIÓN ESTABLE SIN DESBORDES ===== */
+/*MODAL MAPA – VERSIÓN ESTABLE SIN DESBORDES*/
 .modal-mapa-overlay {
     position: fixed;
     top: 0;
@@ -730,11 +642,9 @@ footer {
     align-items: center;
     justify-content: center;
 }
-
 .modal-mapa-overlay.activo {
     display: flex;
 }
-
 .modal-mapa-contenido {
     width: 90%;
     max-width: 850px;
@@ -748,7 +658,6 @@ footer {
     box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4);
     animation: modalFadeIn 0.25s ease-out;
 }
-
 @keyframes modalFadeIn {
     from {
         opacity: 0;
@@ -759,25 +668,21 @@ footer {
         transform: scale(1);
     }
 }
-
 .modal-mapa-header {
     flex-shrink: 0;
     padding: 20px 24px 10px 24px;
     border-bottom: 1px solid #e2e8f0;
 }
-
 .modal-mapa-header h3 {
     margin: 0;
     font-size: 1.4rem;
     color: var(--azul-cobalto);
 }
-
 .modal-mapa-header p {
     margin: 6px 0 0 0;
     color: #475569;
     font-size: 0.85rem;
 }
-
 /* Contenedor del mapa – ocupa todo el espacio disponible */
 #contenedor-mapa-reporte {
     flex: 1;
@@ -786,13 +691,11 @@ footer {
     background: #eef2ff;
     position: relative;
 }
-
 /* Asegurar que Leaflet se adapte */
 #contenedor-mapa-reporte .leaflet-container {
     width: 100%;
     height: 100%;
 }
-
 .modal-mapa-footer {
     flex-shrink: 0;
     padding: 16px 24px;
@@ -803,7 +706,6 @@ footer {
     background: #fafcff;
     flex-wrap: wrap;
 }
-
 /* Botones del footer – usan clases existentes */
 .modal-mapa-footer .btn-secundario,
 .modal-mapa-footer .btn-primario {
@@ -811,7 +713,6 @@ footer {
     padding: 8px 20px;
     font-size: 0.9rem;
 }
-
 /* Responsive para móviles */
 @media (max-width: 640px) {
     .modal-mapa-contenido {
