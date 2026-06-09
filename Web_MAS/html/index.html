@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 
 <body>
@@ -458,6 +459,26 @@
           </table>
         </div>
       </div>
+      <div id="modal-editar-categoria"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; justify-content: center; align-items: center;">
+        <div
+          style="background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 400px; text-align: center;">
+          <h3>Modificar Categoría</h3>
+
+          <input type="hidden" id="edit-cat-id">
+
+          <div style="margin: 15px 0; text-align: left;">
+            <label for="edit-cat-nombre"><strong>Nuevo nombre de la categoría:</strong></label>
+            <input type="text" id="edit-cat-nombre" style="width: 100%; padding: 8px; margin-top: 5px;"
+              placeholder=\"Ej: Tala ilegal\">
+          </div>
+
+          <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+            <button onclick="guardarEdicionCategoria()" class="btn-primario" style="width: 48%;">Guardar</button>
+            <button onclick="cerrarModalCategoria()" class="btn-secundario" style="width: 48%;">Cancelar</button>
+          </div>
+        </div>
+      </div>
       <!-- NUEVA SECCIÓN: Gestión de usuarios -->
       <hr style="margin: 20px 0; border: none; border-top: 1px solid #e5e7eb;" />
       <h3>Gestión de usuarios</h3>
@@ -537,11 +558,6 @@
         </form>
       </div>
     </section>
-
-
-
-
-
 
     <!-- Panel privado de usuario (ciudadano) -->
     <section id="panel-usuario" class="oculto">
@@ -661,8 +677,6 @@
             <option value="en_proceso">En proceso</option>
             <option value="cerrado">Cerrado</option>
           </select>
-          <label for="observacion-cierre">Observación / nota de cierre (opcional)</label>
-          <textarea id="observacion-cierre" rows="3"></textarea>
           <button type="button" id="btn-guardar-estado" class="btn-primario">
             Guardar cambios
           </button>
@@ -674,6 +688,10 @@
             style="padding: 4px 8px; font-size: 0.8rem; margin-left: 10px; display: none; text-decoration: none;">🗺️
             Ver en Google Maps</a>
         </p>
+        <button type="button" onclick="exportarReportePDF()" class="btn-secundario"
+          style="background-color: #e0a800; color: #fff; margin-top: 10px;">
+          📄 Exportar a PDF
+        </button>
       </div>
     </section>
   </main>

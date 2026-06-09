@@ -1218,6 +1218,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             <button class="btn-secundario" style="background:#ef4444; color:white; border:none;" onclick="eliminarCategoria(${cat.id_categoria}, '${cat.nombre_categoria}')">
                                 🗑️ Eliminar
                             </button>
+                            <button onclick="abrirModalEditarCategoria(${cat.id_categoria}, '${cat.nombre_categoria}')" class="btn-primario" style="margin-right: 5px;">Editar</button>
                         </td>
                     `;
             tbodyCat.appendChild(tr);
@@ -1282,6 +1283,281 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Tu navegador no soporta la geolocalización.");
     }
   });
+  //----------------------------------------------------------------------------------------
+  // === FUNCIONES PARA MODIFICAR CATEGORÍA (Globales) ===
+
+  // 1. Abre el modal y precarga los datos actuales
+  window.abrirModalEditarCategoria = function (idCategoria, nombreActual) {
+    document.getElementById("edit-cat-id").value = idCategoria;
+    document.getElementById("edit-cat-nombre").value = nombreActual;
+    document.getElementById("modal-editar-categoria").style.display = "flex";
+  };
+
+  // 2. Cierra el modal y limpia el input
+  window.cerrarModalCategoria = function () {
+    document.getElementById("modal-editar-categoria").style.display = "none";
+    document.getElementById("edit-cat-id").value = "";
+    document.getElementById("edit-cat-nombre").value = "";
+  };
+
+  // 3. Envía los datos al PHP
+  window.guardarEdicionCategoria = async function () {
+    const idCategoria = document.getElementById("edit-cat-id").value;
+    const nuevoNombre = document.getElementById("edit-cat-nombre").value.trim();
+
+    if (!nuevoNombre) {
+      alert("El nombre de la categoría no puede estar vacío.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("id_categoria", idCategoria);
+    formData.append("nuevo_nombre", nuevoNombre);
+
+    try {
+      const respuesta = await fetch("../php/modificar_categoria.php", {
+        method: "POST",
+        body: formData,
+      });
+      const resultado = await respuesta.json();
+
+      if (resultado.ok) {
+        alert(resultado.mensaje);
+        cerrarModalCategoria();
+        // Refrescamos la tabla y los selectores mágicamente
+        if (typeof cargarCategorias === "function") {
+          cargarCategorias();
+        }
+      } else {
+        alert("Error: " + resultado.mensaje);
+      }
+    } catch (error) {
+      console.error("Error en la petición:", error);
+      alert("Ocurrió un error al intentar modificar la categoría.");
+    }
+  };
+
+  // === FUNCÍON PARA EXPORTAR EL REPORTE A PDF ===
+  window.exportarReportePDF = function () {
+    // 1. Identifica el contenedor HTML que envuelve TODO el detalle del reporte
+    // Cambia 'seccion-detalle' por el ID real del contenedor que quieres imprimir
+    const elemento =
+      document.getElementById("panel-autoridad") ||
+      document.querySelector(".detalle-estado");
+
+    if (!elemento) {
+      alert("No se pudo encontrar la información del reporte para exportar.");
+      return;
+    }
+
+    // 2. Configuraciones estéticas y de resolución para el documento
+    const opciones = {
+      margin: 15, // Márgenes del documento en mm
+      filename: `Reporte_Ambiental_MAS.pdf`, // Nombre del archivo descargado
+      image: { type: "jpeg", quality: 0.98 }, // Calidad de la imagen de evidencia
+      html2canvas: {
+        scale: 3, // Aumenta la escala para que los textos e imágenes no salgan pixelados
+        useCORS: true, // Evita problemas de permisos si las fotos están en subcarpetas
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }, // Formato de página A4 vertical
+    };
+
+    // 3. Ocultar temporalmente elementos que no queremos en el PDF (como botones)
+    const botones = elemento.querySelectorAll("button, select, label");
+    botones.forEach((b) => (b.style.visibility = "hidden"));
+
+    // 4. Ejecutar la conversión y descarga
+    html2pdf()
+      .set(opciones)
+      .from(elemento)
+      .save()
+      .then(() => {
+        // 5. Volver a mostrar los botones una vez generado el PDF
+        botones.forEach((b) => (b.style.visibility = "visible"));
+      })
+      .catch((error) => {
+        console.error("Error al generar el PDF:", error);
+        alert("Ocurrió un error al procesar el PDF.");
+        // Asegurar que los botones vuelvan a aparecer si hay error
+        botones.forEach((b) => (b.style.visibility = "visible"));
+      });
+  }; // === FUNCIÓN CORREGIDA PARA EXPORTAR EL REPORTE A PDF ===
+  window.exportarReportePDF = function () {
+    // 1. Buscamos el contenedor específico donde la autoridad ve el reporte abierto.
+    // Buscamos la sección visible dentro del panel de autoridad o el bloque del detalle.
+    const elemento =
+      document.querySelector("#panel-autoridad .seccion-detalle") ||
+      document.querySelector(".detalle-estado")?.parentElement ||
+      document.getElementById("panel-autoridad");
+
+    if (!elemento) {
+      alert(
+        "No se pudo encontrar el contenedor de información del reporte para exportar.",
+      );
+      return;
+    }
+
+    // 2. Configuraciones de renderizado de alta fidelidad
+    const opciones = {
+      margin: 15,
+      filename: `Reporte_Ambiental_MAS.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2, // Escala ideal para nitidez sin romper memoria
+        useCORS: true, // Permite cargar la foto de evidencia correctamente
+        logging: false, // Desactiva logs innecesarios en consola
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    // 3. Ocultar SOLAMENTE elementos interactivos (botones y el select de cambiar estado)
+    // Dejamos las etiquetas <label> intactas para que no se borren los títulos de los campos
+    const elementosAOcultar = elemento.querySelectorAll(
+      "button, select, textarea",
+    );
+    elementosAOcultar.forEach((el) => (el.style.opacity = "0")); // Usamos opacity para mantener el espacio físico si es necesario, o 'none' si prefieres colapsar
+
+    // 4. Ejecutar la conversión
+    html2pdf()
+      .set(opciones)
+      .from(elemento)
+      .save()
+      .then(() => {
+        // 5. Restaurar la visibilidad de los botones en la pantalla del usuario
+        elementosAOcultar.forEach((el) => (el.style.opacity = "1"));
+      })
+      .catch((error) => {
+        console.error("Error al generar el PDF:", error);
+        alert("Ocurrió un error al procesar el PDF.");
+        // Restaurar en caso de error involuntario
+        elementosAOcultar.forEach((el) => (el.style.opacity = "1"));
+      });
+  };
+  // === FUNCIÓN DEFINITIVA PARA EXPORTAR EL REPORTE A PDF (A PRUEBA DE BUGS) ===
+  window.exportarReportePDF = function () {
+    // 1. Buscamos el contenedor exacto usando el campo de coordenadas como ancla fija
+    const contenedorOriginal =
+      document
+        .querySelector('[data-campo="coordenadas"]')
+        ?.closest("section") ||
+      document.querySelector('[data-campo="coordenadas"]')?.parentElement ||
+      document.getElementById("panel-autoridad");
+
+    if (!contenedorOriginal) {
+      alert(
+        "No se pudo encontrar la sección de datos del reporte para exportar.",
+      );
+      return;
+    }
+
+    // 2. Clonamos el elemento en memoria para no alterar la pantalla real del usuario
+    const clon = contenedorOriginal.cloneNode(true);
+
+    // 3. Eliminamos del clon todo lo interactivo que no deba salir en el documento impreso
+    const elementosAEliminar = clon.querySelectorAll(
+      "button, select, textarea, script",
+    );
+    elementosAEliminar.forEach((el) => el.remove());
+
+    // 4. Forzamos estilos limpios en el clon para garantizar texto negro sobre fondo blanco
+    clon.style.display = "block";
+    clon.style.background = "#ffffff";
+    clon.style.color = "#000000";
+    clon.style.padding = "20px";
+    clon.style.width = "100%";
+    clon.style.boxSizing = "border-box";
+
+    // 5. Configuración estricta eliminando el desplazamiento de pantalla (Scroll)
+    const opciones = {
+      margin: 15,
+      filename: `Reporte_Ambiental_MAS.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2, // Duplica la resolución para excelente nitidez
+        useCORS: true, // Permite renderizar la foto de la evidencia sin bloquearse
+        scrollY: 0, // CORRIGE EL BUG: Fuerza la captura desde el inicio del elemento
+        scrollX: 0,
+        windowWidth: document.documentElement.offsetWidth, // Asegura el ancho correcto del lienzo
+        windowHeight: document.documentElement.offsetHeight,
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    // 6. Alimentamos a html2pdf directamente con nuestro clon limpio en memoria
+    html2pdf()
+      .set(opciones)
+      .from(clon)
+      .save()
+      .catch((error) => {
+        console.error("Error crítico al generar el PDF:", error);
+        alert("Ocurrió un error al procesar el PDF.");
+      });
+  };
+
+  // === FUNCIÓN CORREGIDA Y PREMUM PARA EXPORTAR EL REPORTE A PDF ===
+  window.exportarReportePDF = function () {
+    // 1. Apuntamos directamente al contenedor del detalle del reporte seleccionado
+    const contenedorOriginal = document.getElementById(
+      "detalle-reporte-autoridad",
+    );
+
+    if (!contenedorOriginal) {
+      alert("No se pudo encontrar el bloque de información del reporte.");
+      return;
+    }
+
+    // 2. Clonamos el contenedor en la memoria para no dañar lo que ve la autoridad en pantalla
+    const clon = contenedorOriginal.cloneNode(true);
+
+    // 3. Limpiamos el clon: Quitamos botones, listas desplegables y cuadros de texto
+    // Esto evita que salgan los controles interactivos y el botón de exportar dentro del PDF
+    const elementosEliminar = clon.querySelectorAll(
+      "button, select, textarea, a, label",
+    );
+    elementosEliminar.forEach((el) => el.remove());
+
+    // 4. Le aplicamos al clon un formato limpio y ordenado para hojas A4
+    clon.style.display = "block";
+    clon.style.width = "100%";
+    clon.style.background = "#ffffff";
+    clon.style.color = "#222222";
+    clon.style.padding = "30px";
+    clon.style.boxSizing = "border-box";
+    clon.style.fontFamily = "Arial, sans-serif";
+
+    // Ajustamos la imagen de la evidencia dentro del PDF para que no se desborde
+    const imgEvidencia = clon.querySelector('img[data-campo="foto"]');
+    if (imgEvidencia) {
+      imgEvidencia.style.maxWidth = "100%";
+      imgEvidencia.style.height = "auto";
+      imgEvidencia.style.borderRadius = "8px";
+      imgEvidencia.style.marginTop = "15px";
+    }
+
+    // 5. Configuración estricta de renderizado para html2pdf
+    const opciones = {
+      margin: 15,
+      filename: `Reporte_Deforestacion_MAS.pdf`,
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: {
+        scale: 2, // Excelente nitidez para textos y fotos
+        useCORS: true, // Evita el bloqueo de la imagen de evidencia
+        scrollY: 0, // Evita el bug de la página recortada por scroll
+        scrollX: 0,
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
+
+    // 6. Lanzamos la conversión e impresión del PDF
+    html2pdf()
+      .set(opciones)
+      .from(clon)
+      .save()
+      .catch((error) => {
+        console.error("Error al generar el PDF:", error);
+        alert("Ocurrió un error al procesar el PDF.");
+      });
+  };
   //  FORMULARIO REPORTE
   if (formReporte) {
     formReporte.addEventListener("submit", async (e) => {
