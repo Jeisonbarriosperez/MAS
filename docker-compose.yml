@@ -5,6 +5,8 @@ services:
       - "80:80"
     volumes:
       - ./Web_MAS:/var/www/html/
+    environment:
+      - GCP_API_KEY=${GCP_API_KEY}
     depends_on:
       - db
 
@@ -21,7 +23,7 @@ services:
   phpmyadmin:
     image: phpmyadmin
     ports:
-      - "8080:80" # Usamos el puerto 8080 
+      - "8081:80" # Usamos el puerto 8081
     environment:
       PMA_HOST: db
       PMA_USER: root

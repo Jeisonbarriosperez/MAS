@@ -1,1 +1,2 @@
 Web_MAS/recursos/
+echo ".env" >> .gitignore
